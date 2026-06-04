@@ -7,11 +7,12 @@ GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY","")
 gmaps = googlemaps.Client(key=GOOGLE_API_KEY)
 
 WEIGHTS = {
-    "demand":        0.25,
-    "footfall":      0.25,
-    "competition":   0.20,
-    "accessibility": 0.20,
-    "catchment":     0.10
+    "demand":          0.20,  # reduced from 0.25
+    "footfall":        0.20,  # reduced from 0.25
+    "competition":     0.20,
+    "accessibility":   0.15,  # reduced from 0.20
+    "catchment":       0.10,
+    "spending_power":  0.15,  # new variable
 }
 
 def geocode(address):
@@ -138,6 +139,50 @@ def score_catchment(lat, lng):
     except:
         return 30, 0
 
+def score_spending_power(lat, lng):
+    """
+    Uses average price level of nearby places as a spending
+    power proxy. Google price_level: 0=free, 1=cheap,
+    2=moderate, 3=expensive, 4=very expensive.
+    Areas with avg price_level 3+ = high spending power.
+    """
+    try:
+        result = gmaps.places_nearby(
+            location=(lat, lng),
+            radius=1000,
+            keyword="restaurant cafe shop hotel"
+        )
+        places = result.get("results", [])
+
+        if not places:
+            return 50, {"avg_price_level": None, "sample_size": 0}
+
+        price_levels = [
+            p["price_level"]
+            for p in places
+            if "price_level" in p
+        ]
+
+        if not price_levels:
+            return 50, {"avg_price_level": None, "sample_size": 0}
+
+        avg = sum(price_levels) / len(price_levels)
+
+        # Scale: 0→0, 1→25, 2→50, 3→75, 4→100
+        score = round(min(avg / 4 * 100, 100), 1)
+
+        return score, {
+            "avg_price_level": round(avg, 2),
+            "sample_size":     len(price_levels),
+            "distribution": {
+                "budget (0-1)":   sum(1 for p in price_levels if p <= 1),
+                "moderate (2)":   sum(1 for p in price_levels if p == 2),
+                "premium (3-4)":  sum(1 for p in price_levels if p >= 3),
+            }
+        }
+    except:
+        return 50, {"avg_price_level": None, "sample_size": 0}
+
 def score_site(address, brand_type="restaurant"):
     lat, lng = geocode(address)
     if not lat:
@@ -148,13 +193,15 @@ def score_site(address, brand_type="restaurant"):
     competition_score, competitor_details = score_competition(lat, lng, brand_type)
     access_score,      access_data        = score_accessibility(lat, lng)
     catchment_score,   catchment_count    = score_catchment(lat, lng)
+    spending_score,    spending_data      = score_spending_power(lat, lng)
 
     scores = {
-        "demand":        demand_score,
-        "footfall":      footfall_score,
-        "competition":   competition_score,
-        "accessibility": access_score,
-        "catchment":     catchment_score
+        "demand":         demand_score,
+        "footfall":       footfall_score,
+        "competition":    competition_score,
+        "accessibility":  access_score,
+        "catchment":      catchment_score,
+        "spending_power": spending_score,
     }
 
     total = sum(scores[k] * WEIGHTS[k] for k in scores)
@@ -170,11 +217,12 @@ def score_site(address, brand_type="restaurant"):
                               "Moderate" if total >= 45 else "Weak",
         "competitor_details": competitor_details,
         "raw": {
-            "demand_buildings":    demand_count,
-            "footfall_anchors":    footfall_found,
-            "intersections":       access_data["intersections"],
-            "road_nodes":          access_data["total_nodes"],
-            "catchment_places":    catchment_count,
-            "competitor_count":    len(competitor_details),
+            "demand_buildings":  demand_count,
+            "footfall_anchors":  footfall_found,
+            "intersections":     access_data["intersections"],
+            "road_nodes":        access_data["total_nodes"],
+            "catchment_places":  catchment_count,
+            "competitor_count":  len(competitor_details),
+            "spending_data":     spending_data,
         }
     }

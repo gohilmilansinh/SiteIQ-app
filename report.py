@@ -171,6 +171,8 @@ def generate_report(result, output_path="site_report.pdf"):
          "Road intersection density within 300m  (OSM network)"),
         ("Catchment Quality", scores["catchment"],     0.10,
          "Commercial activity within 1km: shops, cafes, services"),
+         ("Spending Power",scores.get("spending_power", 50),0.15,
+            "Average price level of nearby places within 1km (Google Places)"),
     ]
 
     for label, score, weight, note in rows:
@@ -229,6 +231,20 @@ def generate_report(result, output_path="site_report.pdf"):
         "almost entirely on destination visits and anchor-driven footfall."
     )
     body_text(LM, y, demand_txt)
+    # After the demand/footfall kv_table, add:
+    spending_data = result.get("raw", {}).get("spending_data", {})
+    avg_price     = spending_data.get("avg_price_level")
+
+    if avg_price:
+        section_header("Spending Power Analysis")
+        kv_table([
+            ("Spending power score",   f"{scores.get('spending_power', 50)} / 100"),
+            ("Average price level",    f"{avg_price} / 4.0"),
+            ("Places sampled",         str(spending_data.get('sample_size', 0))),
+            ("Budget places (0-1)",    str(spending_data.get('distribution',{}).get('budget (0-1)',0))),
+            ("Moderate places (2)",    str(spending_data.get('distribution',{}).get('moderate (2)',0))),
+            ("Premium places (3-4)",   str(spending_data.get('distribution',{}).get('premium (3-4)',0))),
+        ])
 
     hline(30, color=C_LINE)
     text(W/2, 16, "SiteScore Analytics  |  Confidential", size=8, color=C_GREY, align="center")

@@ -141,7 +141,8 @@ if mode == "Single Site":
             for label, key in [("Demand","demand"),("Footfall","footfall"),
                                 ("Competition","competition"),
                                 ("Accessibility","accessibility"),
-                                ("Catchment","catchment")]:
+                                ("Catchment","catchment"),
+                                ("Spending Power",  "spending_power"),]:
                 s   = scores[key]
                 col = "#1D9E75" if s>=65 else "#BA7517" if s>=45 else "#C0392B"
                 st.markdown(f"""
@@ -151,9 +152,11 @@ if mode == "Single Site":
                 </div>""", unsafe_allow_html=True)
 
         with col_radar:
-            cats = ["Demand","Footfall","Competition","Accessibility","Catchment"]
-            vals = [scores["demand"], scores["footfall"], scores["competition"],
-                    scores["accessibility"], scores["catchment"]]
+            cats = ["Demand","Footfall","Competition",
+        "Accessibility","Catchment","Spending Power"]
+            vals = [scores["demand"], scores["footfall"],
+        scores["competition"], scores["accessibility"],
+        scores["catchment"], scores["spending_power"]]
             fig  = go.Figure(go.Scatterpolar(
                 r=vals+[vals[0]], theta=cats+[cats[0]],
                 fill="toself", fillcolor="rgba(29,158,117,0.15)",
@@ -270,6 +273,29 @@ if mode == "Single Site":
             "Commercial places within 1km",
             f"{raw.get('catchment_places', 0)} places",
             "Cafes, restaurants, shops counted via Google Places. Indicates commercial activity level."
+        )
+
+        spending_data  = raw.get("spending_data", {})
+        avg_price      = spending_data.get("avg_price_level")
+        sample_size    = spending_data.get("sample_size", 0)
+        distribution   = spending_data.get("distribution", {})
+
+        price_label = (
+            f"Avg price level: {avg_price}/4.0 across {sample_size} places"
+            if avg_price else "Not enough price data in this area"
+        )
+        dist_label = (
+            f"Budget: {distribution.get('budget (0-1)',0)}  "
+            f"Moderate: {distribution.get('moderate (2)',0)}  "
+            f"Premium: {distribution.get('premium (3-4)',0)}"
+            if distribution else ""
+        )
+
+        explain_row(
+            "[P]",
+            "Area spending power (price level proxy)",
+            f"{scores.get('spending_power', 50)} / 100",
+            f"{price_label}. {dist_label}"
         )
 
         # Competitor breakdown
@@ -412,10 +438,10 @@ else:
 
         # Comparison bar chart
         st.markdown("### Score Breakdown Comparison")
-        categories   = ["Demand","Footfall","Competition",
-                        "Accessibility","Catchment"]
-        score_keys   = ["demand","footfall","competition",
-                        "accessibility","catchment"]
+        categories = ["Demand","Footfall","Competition",
+              "Accessibility","Catchment","Spending Power"]
+        score_keys = ["demand","footfall","competition",
+              "accessibility","catchment","spending_power"]
         colors_list  = ["#1D9E75","#BA7517","#C0392B",
                         "#185FA5","#8B5CF6"]
 
