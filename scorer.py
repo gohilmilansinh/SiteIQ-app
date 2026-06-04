@@ -29,22 +29,52 @@ def score_demand(lat, lng):
     except:
         return 30
 
-def score_footfall(lat, lng):
-    anchor_types = ["supermarket", "hospital", "school",
-                    "bus_station", "subway_station", "bank"]
+FOOTFALL_ANCHORS = {
+    "restaurant":  ["supermarket", "hospital", "school",
+                    "bus_station", "bank", "subway_station"],
+    "pharmacy":    ["hospital", "doctor", "clinic",
+                    "residential", "bus_station", "bank"],
+    "supermarket": ["residential_area", "bus_station",
+                    "school", "bank", "pharmacy"],
+    "bank":        ["supermarket", "office", "hospital",
+                    "bus_station", "school"],
+    "school":      ["residential_area", "bus_station",
+                    "park", "library", "supermarket"],
+}
+
+def score_footfall(lat, lng, brand_type="restaurant"):
+    anchors = FOOTFALL_ANCHORS.get(brand_type,
+              FOOTFALL_ANCHORS["restaurant"])
     total = 0
-    for anchor in anchor_types:
-        result = gmaps.places_nearby(
-            location=(lat, lng), radius=500, type=anchor)
-        total += len(result.get("results", []))
+    for anchor in anchors:
+        try:
+            res = gmaps.places_nearby(
+                location=(lat, lng),
+                radius=500,
+                type=anchor
+            )
+            total += len(res.get("results", []))
+        except:
+            pass
     return round(min(total / 10 * 100, 100), 1)
 
+# Brand-specific competitor keywords
+BRAND_KEYWORDS = {
+    "restaurant":   "fast food burger pizza QSR cafe restaurant",
+    "pharmacy":     "pharmacy chemist medical store drugstore",
+    "supermarket":  "supermarket grocery kirana departmental store",
+    "bank":         "bank ATM financial services",
+    "school":       "school coaching institute tuition academy",
+}
+
 def score_competition(lat, lng, brand_type="restaurant"):
+    keyword = BRAND_KEYWORDS.get(brand_type,
+              BRAND_KEYWORDS["restaurant"])
     result = gmaps.places_nearby(
         location=(lat, lng),
         radius=500,
-        keyword="fast food burger pizza QSR",
-        type=brand_type
+        keyword=keyword,
+        type=brand_type if brand_type != "school" else "school"
     )
     count = len(result.get("results", []))
     return round(max(100 - (count / 20 * 100), 0), 1)
@@ -73,19 +103,20 @@ def score_site(address, brand_type="restaurant"):
 
     scores = {
         "demand":        score_demand(lat, lng),
-        "footfall":      score_footfall(lat, lng),
-        "competition":   score_competition(lat, lng, brand_type),
+        "footfall":      score_footfall(lat, lng, brand_type),  # now brand-aware
+        "competition":   score_competition(lat, lng, brand_type),  # now brand-aware
         "accessibility": score_accessibility(lat, lng),
         "catchment":     score_catchment(lat, lng)
     }
 
     total = sum(scores[k] * WEIGHTS[k] for k in scores)
-
     return {
-        "address": address,
-        "lat": lat,
-        "lng": lng,
-        "scores": scores,
+        "address":     address,
+        "lat":         lat,
+        "lng":         lng,
+        "brand_type":  brand_type,
+        "scores":      scores,
         "total_score": round(total, 1),
-        "verdict": "Strong" if total >= 65 else "Moderate" if total >= 45 else "Weak"
+        "verdict": "Strong" if total >= 65 else
+                   "Moderate" if total >= 45 else "Weak"
     }

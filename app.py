@@ -215,19 +215,19 @@ if mode == "Single Site":
 
         # PDF download
         st.markdown("---")
-        if st.button("Generate PDF Report", use_container_width=True):
-            with st.spinner("Generating PDF..."):
-                path = f"/tmp/{result['address'][:20].replace(' ','_')}_report.pdf"
-                generate_report(result, path)
-                with open(path, "rb") as f:
-                    pdf_bytes = f.read()
-            st.download_button(
-                label="Download PDF Report",
-                data=pdf_bytes,
-                file_name="sitescore_report.pdf",
-                mime="application/pdf",
-                use_container_width=True
-            )
+        with st.spinner("Preparing PDF report..."):
+            path = f"/tmp/{result['address'][:20].replace(' ','_')}_report.pdf"
+            generate_report(result, path)
+            with open(path, "rb") as f:
+                pdf_bytes = f.read()
+
+        st.download_button(
+            label="Download PDF Report",
+            data=pdf_bytes,
+            file_name="sitescore_report.pdf",
+            mime="application/pdf",
+            use_container_width=True
+        )
 
         st.caption("SiteScore Analytics · Ahmedabad · OpenStreetMap + Google Places API")
 
@@ -476,19 +476,19 @@ else:
 
         # Export PDF for best site
         st.markdown("")
-        if st.button("Download PDF for Best Site", use_container_width=True):
-            with st.spinner("Generating PDF..."):
-                path = f"/tmp/best_site_report.pdf"
-                generate_report(best, path)
-                with open(path, "rb") as f:
-                    pdf_bytes = f.read()
-            st.download_button(
-                label="Download PDF Report",
-                data=pdf_bytes,
-                file_name="best_site_report.pdf",
-                mime="application/pdf",
-                use_container_width=True
-            )
+        with st.spinner("Preparing PDF report..."):
+            path = f"/tmp/best_site_report.pdf"
+            generate_report(best, path)
+            with open(path, "rb") as f:
+                pdf_bytes = f.read()
+
+        st.download_button(
+            label="Download PDF Report for Best Site",
+            data=pdf_bytes,
+            file_name="best_site_report.pdf",
+            mime="application/pdf",
+            use_container_width=True
+        )
 
         st.caption(
             "SiteScore Analytics · Ahmedabad · "
