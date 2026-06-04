@@ -7,6 +7,7 @@ from report import generate_report
 import time
 import io
 import streamlit.components.v1 as components
+from history import load_history, save_to_history, clear_history
 from benchmarks import get_benchmark_stats, get_percentile, get_category_context
 
 st.set_page_config(
@@ -73,7 +74,7 @@ st.markdown("""
 # ── Mode selector ─────────────────────────────────────────
 mode = st.radio(
     "Mode",
-    ["Single Site", "Compare 3 Sites"],
+    ["Single Site", "Compare 3 Sites", "History"],
     horizontal=True,
     label_visibility="collapsed"
 )
@@ -131,6 +132,7 @@ if mode == "Single Site":
                 st.error(result["error"])
             else:
                 st.session_state.result = result
+                save_to_history(result)
         else:
             st.warning("Please enter an address first.")
 
@@ -663,3 +665,151 @@ else:
         st.caption(
             "SiteScore Analytics · Ahmedabad · "
             "OpenStreetMap + Google Places API")
+        
+# ════════════════════════════════════════════════════════════
+# HISTORY MODE
+# ════════════════════════════════════════════════════════════
+elif mode == "History":
+    st.markdown("### Previously Scored Sites")
+
+    history = load_history()
+
+    if not history:
+        st.markdown("""
+        <div style='background:#111;border:1px solid #222;
+                    border-radius:10px;padding:32px;text-align:center;
+                    color:#888;margin-top:16px'>
+          <div style='font-size:32px;margin-bottom:12px'>📋</div>
+          <div style='font-size:14px'>No sites scored yet.</div>
+          <div style='font-size:12px;margin-top:6px'>
+            Switch to Single Site mode and score your first location.
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        # Summary stats
+        avg_score = round(
+            sum(h["total_score"] for h in history) / len(history), 1)
+        strong    = sum(1 for h in history if h["verdict"] == "Strong")
+        moderate  = sum(1 for h in history if h["verdict"] == "Moderate")
+        weak      = sum(1 for h in history if h["verdict"] == "Weak")
+
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Sites Scored",   len(history))
+        col2.metric("Average Score",  avg_score)
+        col3.metric("Strong Sites",   strong)
+        col4.metric("Weak Sites",     weak)
+
+        st.markdown("---")
+
+        # Search/filter
+        search = st.text_input(
+            "Filter by address",
+            placeholder="Type to filter...",
+            label_visibility="collapsed"
+        )
+
+        filtered = [
+            h for h in history
+            if search.lower() in h["address"].lower()
+        ] if search else history
+
+        if not filtered:
+            st.warning("No results match your search.")
+        else:
+            for entry in filtered:
+                vc = "#1D9E75" if entry["verdict"] == "Strong" else \
+                     "#BA7517" if entry["verdict"] == "Moderate" else \
+                     "#C0392B"
+
+                scores = entry["scores"]
+
+                with st.expander(
+                    f"{entry['verdict']} · {entry['total_score']}/100 · "
+                    f"{entry['address'][:55]}"
+                ):
+                    col_info, col_scores = st.columns([2, 3])
+
+                    with col_info:
+                        st.markdown(f"""
+                        <div style='margin-bottom:12px'>
+                          <div style='font-size:11px;color:#888'>SCORED ON</div>
+                          <div style='font-size:13px;color:white'>
+                            {entry["timestamp"]}</div>
+                        </div>
+                        <div style='margin-bottom:12px'>
+                          <div style='font-size:11px;color:#888'>
+                            BRAND TYPE</div>
+                          <div style='font-size:13px;color:white;
+                                      text-transform:capitalize'>
+                            {entry["brand_type"]}</div>
+                        </div>
+                        <div style='margin-bottom:12px'>
+                          <div style='font-size:11px;color:#888'>LOCATION</div>
+                          <div style='font-size:12px;color:#9ecfc0'>
+                            {entry["lat"]:.4f}N, {entry["lng"]:.4f}E</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+
+                        st.markdown(f"""
+                        <div style='background:#0A2E26;border-radius:8px;
+                                    padding:14px;text-align:center'>
+                          <div style='font-size:36px;font-weight:700;
+                                      color:{vc}'>{entry["total_score"]}</div>
+                          <div style='font-size:11px;color:#9ecfc0'>
+                            out of 100</div>
+                          <div style='font-size:13px;font-weight:600;
+                                      color:{vc};margin-top:4px'>
+                            {entry["verdict"].upper()} SITE</div>
+                        </div>
+                        """, unsafe_allow_html=True)
+
+                    with col_scores:
+                        st.markdown("**Score breakdown**")
+                        for label, key in [
+                            ("Demand",         "demand"),
+                            ("Footfall",       "footfall"),
+                            ("Competition",    "competition"),
+                            ("Accessibility",  "accessibility"),
+                            ("Catchment",      "catchment"),
+                            ("Spending Power", "spending_power"),
+                        ]:
+                            s   = scores.get(key, 0)
+                            col = "#1D9E75" if s>=65 else \
+                                  "#BA7517" if s>=45 else "#C0392B"
+                            bar = int(s)
+                            st.markdown(f"""
+                            <div style='margin-bottom:8px'>
+                              <div style='display:flex;
+                                          justify-content:space-between;
+                                          margin-bottom:3px'>
+                                <span style='font-size:11px;
+                                             color:#888'>{label}</span>
+                                <span style='font-size:12px;font-weight:700;
+                                             color:{col}'>{s}</span>
+                              </div>
+                              <div style='background:#222;border-radius:3px;
+                                          height:5px'>
+                                <div style='width:{bar}%;background:{col};
+                                            height:5px;border-radius:3px'>
+                                </div>
+                              </div>
+                            </div>
+                            """, unsafe_allow_html=True)
+
+                    # Re-score button
+                    if st.button(
+                        f"Re-score this site",
+                        key=f"rescore_{entry['address'][:20]}"
+                    ):
+                        st.session_state.result = None
+                        st.info(
+                            f"Switch to Single Site mode and enter: "
+                            f"{entry['address']}"
+                        )
+
+        st.markdown("---")
+        if st.button("Clear All History", type="secondary"):
+            clear_history()
+            st.success("History cleared.")
+            st.rerun()
