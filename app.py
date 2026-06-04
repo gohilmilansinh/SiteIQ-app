@@ -82,6 +82,23 @@ mode = st.radio(
 if "result"   not in st.session_state: st.session_state.result   = None
 if "compared" not in st.session_state: st.session_state.compared = None
 
+# Clear any stale error results from previous sessions
+if st.session_state.result is not None:
+    if not isinstance(st.session_state.result, dict) or \
+       "scores" not in st.session_state.result:
+        st.session_state.result = None
+
+if st.session_state.compared is not None:
+    if not isinstance(st.session_state.compared, list):
+        st.session_state.compared = None
+    else:
+        st.session_state.compared = [
+            r for r in st.session_state.compared
+            if isinstance(r, dict) and "scores" in r
+        ]
+        if not st.session_state.compared:
+            st.session_state.compared = None
+
 # ════════════════════════════════════════════════════════════
 # SINGLE SITE MODE
 # ════════════════════════════════════════════════════════════
