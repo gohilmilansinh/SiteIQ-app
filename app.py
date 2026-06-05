@@ -176,16 +176,13 @@ if mode == "Single Site":
           #map-div {{ height: 100%; width: 100%; border-radius: 8px; }}
 
           #map-toggle {{
-            margin-top: 8px;
             background: #0A2E26;
             color: #9ecfc0;
             border: 1px solid #1D9E75;
-            padding: 7px 14px;
-            border-radius: 6px;
+            padding: 10px 12px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 12px;
-            font-family: sans-serif;
-            width: 100%;
+            font-size: 18px;
           }}
 
           #map-toggle:hover {{ background: #1a4a3a; }}
@@ -199,20 +196,25 @@ if mode == "Single Site":
           }}
         </style>
 
-        <div id='search-wrapper'>
-          <input
-            id='pac-input'
-            type='text'
-            placeholder='Search any location in Gujarat...'
-            value='{current_address}'
-            autocomplete='off'
-          />
-          <button id='clear-btn' onclick='clearInput()'>×</button>
+        <div style='display:flex;gap:8px;align-items:center'>
+          <div id='search-wrapper' style='flex:1;position:relative'>
+            <input
+              id='pac-input'
+              type='text'
+              placeholder='Search any location in Gujarat...'
+              value='{current_address}'
+              autocomplete='off'
+            />
+            <button id='clear-btn' onclick='clearInput()'>×</button>
+          </div>
+          <button id='map-toggle' onclick='toggleMap()'
+            style='background:#0A2E26;color:#9ecfc0;
+                   border:1px solid #1D9E75;padding:10px 12px;
+                   border-radius:8px;cursor:pointer;font-size:18px;
+                   white-space:nowrap;flex-shrink:0'>
+            📍
+          </button>
         </div>
-
-        <button id='map-toggle' onclick='toggleMap()'>
-          📍 Pick exact location on map
-        </button>
 
         <div id='map-container'>
           <div id='map-div'></div>
@@ -347,12 +349,8 @@ if mode == "Single Site":
 
           function toggleMap() {{
             const container = document.getElementById('map-container');
-            const btn = document.getElementById('map-toggle');
             mapVisible = !mapVisible;
             container.style.display = mapVisible ? 'block' : 'none';
-            btn.textContent = mapVisible
-              ? '✕ Close map'
-              : '📍 Pick exact location on map';
             if (mapVisible) {{
               setTimeout(function() {{
                 google.maps.event.trigger(map, 'resize');
@@ -367,7 +365,7 @@ if mode == "Single Site":
         </script>
         """
 
-        components.html(search_html, height=420, scrolling=False)
+        components.html(search_html, height=360, scrolling=False)
 
     # Address comes from query params set by the component
     address = st.session_state.get("search_address", "")
