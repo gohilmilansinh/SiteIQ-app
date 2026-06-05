@@ -386,22 +386,22 @@ if mode == "Single Site":
         )
 
 if st.button("Score This Site", type="primary", use_container_width=True):
-        if address.strip():
-            with st.spinner("Analysing location — takes 20–30 seconds..."):
-                result = score_site(address.strip(), brand_type)
+    if address.strip():
+        with st.spinner("Analysing location — takes 20–30 seconds..."):
+            result = score_site(address.strip(), brand_type)
 
-            if not result:
-                st.session_state.result = None
-                st.error("Something went wrong. Please try again.")
-            elif "error" in result:
-                st.session_state.result = None
-                st.error(result["error"])
-            else:
-                result["mode"] = "single"
-                st.session_state.result = result
-                save_to_history(result)
+        if not result:
+            st.session_state.result = None
+            st.error("Something went wrong. Please try again.")
+        elif "error" in result:
+            st.session_state.result = None
+            st.error(result["error"])
         else:
-            st.warning("Please enter an address first.")
+            result["mode"] = "single"
+            st.session_state.result = result
+            save_to_history(result)
+    else:
+        st.warning("Please enter an address first.")
 
     if st.session_state.result and "error" not in st.session_state.result:
         result   = st.session_state.result
