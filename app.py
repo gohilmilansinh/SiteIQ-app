@@ -405,7 +405,7 @@ if mode == "Single Site":
 # ════════════════════════════════════════════════════════════
 # COMPARE 3 SITES MODE
 # ════════════════════════════════════════════════════════════
-else:
+elif mode == "Compare 3 Sites":
     st.markdown("#### Enter 3 candidate sites to compare")
 
     col1, col2, col3 = st.columns(3)
