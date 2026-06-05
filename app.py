@@ -131,6 +131,7 @@ if mode == "Single Site":
                 st.session_state.result = None
                 st.error(result["error"])
             else:
+                result["mode"] = "single"
                 st.session_state.result = result
                 save_to_history(result)
         else:
@@ -448,6 +449,10 @@ elif mode == "Compare 3 Sites":
             if results:
                 results.sort(key=lambda x: x["total_score"], reverse=True)
                 st.session_state.compared = results
+                # Save each compared site to history
+                for r in results:
+                    r["mode"] = "compare"
+                    save_to_history(r)
             else:
                 st.error("Could not score any of those addresses.")
 
@@ -732,8 +737,16 @@ elif mode == "History":
 
                     with col_info:
                         st.markdown(f"""
-                        <div style='margin-bottom:12px'>
-                          <div style='font-size:11px;color:#888'>SCORED ON</div>
+                        mode_badge = "Single Site" if entry.get("mode","single") == "single" else "Compare"
+                        badge_color = "#185FA5" if mode_badge == "Single Site" else "#8B5CF6"
+                        st.markdown(f"""
+                        <div style='display:inline-block;background:{badge_color};
+                                    color:white;font-size:9px;font-weight:600;
+                                    padding:3px 8px;border-radius:20px;
+                                    margin-bottom:10px;letter-spacing:0.5px'>
+                          {mode_badge.upper()}
+                        </div>
+                        """, unsafe_allow_html=True)
                           <div style='font-size:13px;color:white'>
                             {entry["timestamp"]}</div>
                         </div>

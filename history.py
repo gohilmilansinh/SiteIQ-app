@@ -1,13 +1,20 @@
 import json
 import os
+import streamlit as st
 from datetime import datetime
 
-HISTORY_FILE = "/tmp/sitescore_history.json"
+def _get_history_file():
+    """Each user gets their own history file based on session ID."""
+    session_id = st.runtime.scriptrunner.get_script_run_ctx().session_id
+    safe_id    = session_id.replace("-", "")[:16]
+    path       = f"/tmp/sitescore_history_{safe_id}.json"
+    return path
 
 def load_history():
     try:
-        if os.path.exists(HISTORY_FILE):
-            with open(HISTORY_FILE, "r") as f:
+        path = _get_history_file()
+        if os.path.exists(path):
+            with open(path, "r") as f:
                 return json.load(f)
     except:
         pass
@@ -24,14 +31,16 @@ def save_to_history(result):
         "scores":      result["scores"],
         "lat":         result["lat"],
         "lng":         result["lng"],
+        "mode":        result.get("mode", "single"),
     }
-    # Avoid duplicates — remove if same address exists
+    # Remove duplicate address if exists
     history = [h for h in history
                if h["address"] != result["address"]]
-    history.insert(0, entry)  # newest first
-    history = history[:50]    # keep last 50 only
+    history.insert(0, entry)
+    history = history[:50]
     try:
-        with open(HISTORY_FILE, "w") as f:
+        path = _get_history_file()
+        with open(path, "w") as f:
             json.dump(history, f)
     except:
         pass
@@ -39,7 +48,8 @@ def save_to_history(result):
 
 def clear_history():
     try:
-        if os.path.exists(HISTORY_FILE):
-            os.remove(HISTORY_FILE)
+        path = _get_history_file()
+        if os.path.exists(path):
+            os.remove(path)
     except:
         pass
