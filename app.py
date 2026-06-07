@@ -204,9 +204,9 @@ if mode == "Single Site":
         url.searchParams.set('address', addr);
         if (doScore) {{
           url.searchParams.set('do_score', '1');
-        }} else {{
-          url.searchParams.delete('do_score');
-        }}
+        }} 
+        alert("NEW URL:\n" + url.toString());
+
         window.parent.history.replaceState({{}}, '', url.toString());
         // Force Streamlit to re-read query params by clicking
         // the hidden rerun trigger
