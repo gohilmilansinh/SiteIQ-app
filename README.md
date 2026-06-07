@@ -1,6 +1,6 @@
-# SiteScore
+# SiteIQ
 
-SiteScore is a Streamlit-based retail location intelligence app for Gujarat, India. It scores retail sites on demand potential, footfall proxies, competition, accessibility, catchment quality, and generates a PDF report.
+SiteIQ is a Streamlit-based retail location intelligence app for Gujarat, India. It scores retail sites on demand potential, footfall proxies, competition, accessibility, catchment quality, and generates a PDF report.
 
 ## Features
 
@@ -20,8 +20,8 @@ SiteScore is a Streamlit-based retail location intelligence app for Gujarat, Ind
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/gohilmilansinh/sitescore-app.git
-   cd sitescore-app
+   git clone https://github.com/gohilmilansinh/SiteIQ-app.git
+   cd SiteIQ-app
    ```
 
 2. Install dependencies:
