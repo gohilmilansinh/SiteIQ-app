@@ -52,23 +52,38 @@ def render_header() -> None:
     )
 
     st.markdown(
-    f"""
-<div class='site-header'>
+        """
+    <div class='site-header'>
+    """,
+        unsafe_allow_html=True,
+    )
+
+    col1, col2 = st.columns([1, 12])
+
+    with col1:
+        st.image("assets/logo.png", width=50)
+
+    with col2:
+        st.markdown(
+            """
     <div style='color:#9ecfc0;font-size:11px;letter-spacing:2px'>
         RETAIL LOCATION INTELLIGENCE
     </div>
 
-    <div style='display:flex;align-items:center;gap:12px;margin-top:8px'>
-        <img src="data:image/png;base64,{logo_base64}" width="42">
-        <div style='color:white;font-size:28px;font-weight:700'>
-            SiteIQ
-        </div>
+    <div style='color:white;font-size:28px;font-weight:700'>
+        SiteIQ
     </div>
 
-    <div style='color:#9ecfc0;font-size:13px;margin-top:6px'>
+    <div style='color:#9ecfc0;font-size:13px;margin-top:4px'>
         Data-driven retail location intelligence for Gujarat
     </div>
-</div>
-""",
-    unsafe_allow_html=True,
-)
+    """,
+            unsafe_allow_html=True,
+        )
+
+    st.markdown(
+        """
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
