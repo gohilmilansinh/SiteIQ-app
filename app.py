@@ -215,9 +215,18 @@ if mode == "Single Site":
       }}
 
       function submitAddress() {{
-        const addr = input.value.trim();
-        alert("submitAddress called");
-        pushAddress(addr, true);
+          const addr = input.value.trim();
+
+          if (!addr) {{
+              status.textContent = 'Please enter an address first.';
+              status.style.color = '#E74C3C';
+              return;
+          }}
+
+          input.value = addr;
+          status.textContent = 'Submitting...';
+
+          pushAddress(addr, true);
       }}
 
       function initMap() {{
