@@ -13,63 +13,58 @@ import streamlit as st
 def render_header():
 
     st.markdown("""
-    <style>
-    .site-header {
-        background: linear-gradient(90deg,#0A2E26,#004538);
-        border-radius: 18px;
-        padding: 30px;
-        margin-bottom: 25px;
-    }
+        <style>
+        .site-header{
+            background: linear-gradient(90deg,#0A2E26,#004538);
+            border-radius:18px;
+            padding:30px 40px;
+            margin-bottom:24px;
+        }
 
-    .header-label {
-        color:#9ecfc0;
-        font-size:11px;
-        letter-spacing:3px;
-        margin-bottom:10px;
-    }
+        .header-label{
+            color:#9ecfc0;
+            font-size:11px;
+            letter-spacing:3px;
+            margin-bottom:18px;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
-    .header-title {
-        color:white;
-        font-size:36px;
-        font-weight:700;
-        margin:0;
-    }
-
-    .header-subtitle {
-        color:#9ecfc0;
-        font-size:15px;
-        margin-top:4px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-    with st.container():
+        st.markdown('<div class="site-header">', unsafe_allow_html=True)
 
         st.markdown(
             """
-            <div class="site-header">
             <div class="header-label">
-            RETAIL LOCATION INTELLIGENCE
+                RETAIL LOCATION INTELLIGENCE
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        col1, col2 = st.columns([2, 8])
+        col1, col2 = st.columns([1.5, 6])
 
         with col1:
-            st.image("assets/logo.png", width=180)
+            st.image("assets/logo.png", width=160)
 
         with col2:
             st.markdown(
                 """
-                <div class="header-title">
+                <h1 style="
+                    color:white;
+                    margin-bottom:0;
+                    margin-top:15px;
+                    font-size:42px;
+                ">
                     SiteIQ
-                </div>
+                </h1>
 
-                <div class="header-subtitle">
+                <p style="
+                    color:#9ecfc0;
+                    font-size:18px;
+                    margin-top:6px;
+                ">
                     Data-driven retail location intelligence for Gujarat
-                </div>
+                </p>
                 """,
                 unsafe_allow_html=True,
             )
