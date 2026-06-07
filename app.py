@@ -327,27 +327,27 @@ if mode == "Single Site":
     st.write("Query Params:", dict(st.query_params))
     auto_score = st.query_params.get("do_score")
 
-if auto_score == "1":
-    addr = st.session_state.get("search_address", "").strip()
+    if auto_score == "1":
+        addr = st.session_state.get("search_address", "").strip()
 
-    if addr:
-        with st.spinner("Analysing location..."):
-            result = score_site(addr, brand_type)
+        if addr:
+            with st.spinner("Analysing location..."):
+                result = score_site(addr, brand_type)
 
-        if not result:
-            st.session_state.result = None
-            st.error("Something went wrong. Please try again.")
+            if not result:
+                st.session_state.result = None
+                st.error("Something went wrong. Please try again.")
 
-        elif "error" in result:
-            st.session_state.result = None
-            st.error(result["error"])
+            elif "error" in result:
+                st.session_state.result = None
+                st.error(result["error"])
 
-        else:
-            result["mode"] = "single"
-            st.session_state.result = result
-            save_to_history(result)
+            else:
+                result["mode"] = "single"
+                st.session_state.result = result
+                save_to_history(result)
 
-    st.query_params.pop("do_score", None)
+        st.query_params.pop("do_score", None)
 
     # Show confirmed address
     if current_address:
