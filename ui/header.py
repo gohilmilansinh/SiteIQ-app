@@ -5,9 +5,9 @@ def get_base64_image(image_path):
     with open(image_path, "rb") as img:
         return base64.b64encode(img.read()).decode()
 
-logo_base64 = get_base64_image("assets/logo.png")
 
 def render_header() -> None:
+    logo_base64 = get_base64_image("assets/logo.png")
     st.markdown(
         """
 <style>
