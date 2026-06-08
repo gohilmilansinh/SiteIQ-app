@@ -496,7 +496,89 @@ def generate_report(result: dict, output_path: str = "siteiq_report.pdf") -> str
     c.showPage()
 
     # ════════════════════════════════════════════════════
-    # PAGE 5 — FINAL RECOMMENDATION
+    # PAGE 5 — ROI ANALYSIS (only if rent data available)
+    # ════════════════════════════════════════════════════
+    roi = result.get("roi")
+    if roi:
+        y = H - 40
+        y = section_title(y, "ROI & Investment Analysis")
+
+        # Combined score banner
+        banner_h = 70
+        banner_y = y - banner_h
+        box(LM, banner_y, CW, banner_h, fill=C_DARK, r=6)
+
+        # Left side — label at top, big score below
+        txt(LM + 16, banner_y + banner_h - 16,
+            "COMBINED SCORE", size=8, color=C_GREY)
+        txt(LM + 16, banner_y + 18,
+            f"{roi['combined_score']} / 100",
+            size=24, bold=True,
+            color=colors.HexColor(roi["verdict_color"]))
+
+        # Right side — verdict at top, recommendation below
+        txt(W - RM - 16, banner_y + banner_h - 16,
+            roi["verdict"], size=13, bold=True,
+            color=colors.HexColor(roi["verdict_color"]),
+            align="right")
+        txt(W - RM - 16, banner_y + 18,
+            roi["recommendation"], size=9,
+            color=C_GREY, align="right")
+
+        y = banner_y - 16
+
+        y = kv(y, "Location score",
+               f"{roi['location_score']} / 100")
+        y = kv(y, "ROI score",
+               f"{roi['roi_score']} / 100")
+        y = kv(y, "Combined score (70% location + 30% ROI)",
+               f"{roi['combined_score']} / 100")
+
+        y -= 6
+        y = section_title(y, "Financial Summary")
+
+        def fmt(n):
+            if n >= 100000:
+                return f"Rs. {n/100000:.1f}L"
+            return f"Rs. {n:,.0f}"
+
+        y = kv(y, "Est. monthly revenue",
+               fmt(roi["est_monthly_revenue"]))
+        y = kv(y, "Monthly rent",
+               fmt(roi["monthly_rent"]))
+        y = kv(y, "Monthly profit",
+               fmt(roi["monthly_profit"]),
+               value_color=C_GREEN if roi["monthly_profit"] > 0
+               else C_RED)
+        y = kv(y, "Annual profit",
+               fmt(roi["annual_profit"]))
+        y = kv(y, "Rent as % of revenue",
+               f"{roi['rent_pct_of_revenue']}%")
+        y = kv(y, "Rent rating",
+               roi["rent_label"],
+               value_color=colors.HexColor(roi["rent_color"]))
+        y = kv(y, "Setup / fit-out cost",
+               fmt(roi["setup_cost"]))
+        y = kv(y, "Estimated payback period",
+               f"{roi['payback_months']:.0f} months"
+               if roi["payback_months"] < 999
+               else "Not viable at current rent")
+
+        y -= 10
+        disclaimer = (
+            "Revenue estimates are based on Gujarat market benchmarks "
+            "for the selected brand category. Actual revenue will vary "
+            "based on brand strength, operations, and local market "
+            "conditions. These estimates should be validated against "
+            "actual outlet performance data before final commitment."
+        )
+        body(LM, y, disclaimer, size=8, color=C_GREY)
+
+        footer(5)
+        c.showPage()
+
+    # ════════════════════════════════════════════════════
+    # PAGE 6 — FINAL RECOMMENDATION
     # ════════════════════════════════════════════════════
     y = H - 40
     y = section_title(y, "Final Recommendation")
@@ -587,7 +669,7 @@ def generate_report(result: dict, output_path: str = "siteiq_report.pdf") -> str
     txt(W - RM, 22,
         f"Generated {datetime.now().strftime('%d %b %Y, %I:%M %p')}",
         size=8, color=C_GREY, align="right")
-    txt(cx, 10, "Page 5", size=7, color=C_GREY, align="center")
+    txt(cx, 10, "Page 6", size=7, color=C_GREY, align="center")
     c.showPage()
     c.save()
     print(f"Report saved: {output_path}")

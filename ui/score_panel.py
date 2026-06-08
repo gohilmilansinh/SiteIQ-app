@@ -10,6 +10,7 @@ import streamlit.components.v1 as components
 from report import generate_report
 from benchmarks import get_category_context
 import os
+from roi_calculator import calculate_roi
 
 
 def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
@@ -300,6 +301,180 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
                     "</div></div>"
                 )
                 st.markdown(html, unsafe_allow_html=True)
+
+    # ── ROI Calculator ────────────────────────────────────
+    st.markdown("### ROI Analysis")
+    st.markdown(
+        "<div style='font-size:12px;color:#888;margin-bottom:12px'>"
+        "Enter monthly rent to calculate return on investment. "
+        "Revenue estimates use Gujarat market benchmarks.</div>",
+        unsafe_allow_html=True,
+    )
+
+    col_rent, col_setup = st.columns(2)
+    with col_rent:
+        monthly_rent = st.number_input(
+            "Monthly Rent (Rs.)",
+            min_value=0,
+            max_value=2000000,
+            value=0,
+            step=5000,
+            help="Enter the monthly rent quoted for this site",
+            key=f"rent_{result['address'][:15]}",
+        )
+    with col_setup:
+        setup_cost = st.number_input(
+            "Setup / Fit-out Cost (Rs.)",
+            min_value=0,
+            max_value=10000000,
+            value=0,
+            step=50000,
+            help="One-time setup cost — leave 0 to use category benchmark",
+            key=f"setup_{result['address'][:15]}",
+        )
+
+    if monthly_rent > 0:
+        roi = calculate_roi(
+            total_score=result["total_score"],
+            monthly_rent=monthly_rent,
+            brand_type=result.get("brand_type", "restaurant"),
+            setup_cost=setup_cost if setup_cost > 0 else None,
+        )
+
+        # ROI summary banner
+        st.markdown(f"""
+        <div style='background:#0A2E26;border-radius:12px;
+                    padding:20px 24px;margin:12px 0'>
+          <div style='display:flex;justify-content:space-between;
+                      align-items:center;flex-wrap:wrap;gap:12px'>
+            <div>
+              <div style='font-size:10px;color:#9ecfc0;
+                          letter-spacing:1px'>COMBINED SCORE</div>
+              <div style='font-size:42px;font-weight:700;
+                          color:{roi["verdict_color"]};line-height:1'>
+                {roi["combined_score"]}</div>
+              <div style='font-size:11px;color:#9ecfc0'>
+                Location {roi["location_score"]} × 70% + 
+                ROI {roi["roi_score"]} × 30%</div>
+            </div>
+            <div style='text-align:center'>
+              <div style='font-size:16px;font-weight:700;
+                          color:{roi["verdict_color"]}'>
+                {roi["verdict"]}</div>
+              <div style='font-size:11px;color:#9ecfc0;margin-top:4px'>
+                {roi["recommendation"]}</div>
+            </div>
+            <div style='text-align:right'>
+              <div style='font-size:10px;color:#9ecfc0'>RENT RATING</div>
+              <div style='font-size:20px;font-weight:700;
+                          color:{roi["rent_color"]}'>
+                {roi["rent_label"]}</div>
+              <div style='font-size:11px;color:#9ecfc0'>
+                {roi["rent_pct_of_revenue"]}% of est. revenue</div>
+            </div>
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Metrics row
+        col1, col2, col3, col4 = st.columns(4)
+
+        def fmt_inr(amount):
+            if amount >= 100000:
+                return f"Rs. {amount/100000:.1f}L"
+            return f"Rs. {amount:,.0f}"
+
+        col1.metric(
+            "Est. Monthly Revenue",
+            fmt_inr(roi["est_monthly_revenue"]),
+            help="Based on site score and Gujarat category benchmarks"
+        )
+        col2.metric(
+            "Monthly Profit",
+            fmt_inr(roi["monthly_profit"]),
+            delta=fmt_inr(roi["monthly_profit"]),
+            delta_color="normal"
+        )
+        col3.metric(
+            "Annual Profit",
+            fmt_inr(roi["annual_profit"]),
+        )
+        col4.metric(
+            "Payback Period",
+            f"{roi['payback_months']:.0f} months"
+            if roi["payback_months"] < 999
+            else "Not viable",
+            help="Months to recover total setup cost"
+        )
+
+        # Rent sensitivity table
+        st.markdown("**Rent Sensitivity — what different rent levels mean**")
+
+        rent_levels = [
+            monthly_rent * 0.6,
+            monthly_rent * 0.8,
+            monthly_rent,
+            monthly_rent * 1.2,
+            monthly_rent * 1.4,
+        ]
+        labels = ["-40%", "-20%", "Current", "+20%", "+40%"]
+
+        rows = ""
+        for label, rent in zip(labels, rent_levels):
+            r = calculate_roi(
+                result["total_score"], rent,
+                result.get("brand_type", "restaurant"),
+                setup_cost if setup_cost > 0 else None
+            )
+            is_current = label == "Current"
+            bg = "#1a3a2a" if is_current else "transparent"
+            rows += (
+                f"<tr style='background:{bg}'>"
+                f"<td style='padding:8px 12px;color:#9ecfc0;"
+                f"font-weight:{'700' if is_current else '400'}'>"
+                f"{label}</td>"
+                f"<td style='padding:8px 12px;color:white'>"
+                f"Rs. {rent:,.0f}</td>"
+                f"<td style='padding:8px 12px;"
+                f"color:{r['rent_color']};font-weight:600'>"
+                f"{r['rent_label']}</td>"
+                f"<td style='padding:8px 12px;color:white'>"
+                f"Rs. {r['monthly_profit']:,.0f}</td>"
+                f"<td style='padding:8px 12px;color:white'>"
+                f"{r['payback_months']:.0f} mo"
+                if r['payback_months'] < 999
+                else "<td style='padding:8px 12px;color:#C0392B'>Not viable"
+                f"</td></tr>"
+            )
+
+        sensitivity_html = f"""
+        <!DOCTYPE html><html><head>
+        <style>
+          body{{margin:0;background:transparent;font-family:sans-serif}}
+          table{{width:100%;border-collapse:collapse;font-size:13px}}
+          th{{padding:10px 12px;background:#0A2E26;color:#9ecfc0;
+              font-size:11px;text-align:left;letter-spacing:.5px}}
+          tr{{border-bottom:1px solid #1a2a1a}}
+        </style></head><body>
+        <table>
+          <thead><tr>
+            <th>SCENARIO</th><th>MONTHLY RENT</th>
+            <th>RATING</th><th>MONTHLY PROFIT</th>
+            <th>PAYBACK</th>
+          </tr></thead>
+          <tbody>{rows}</tbody>
+        </table></body></html>"""
+
+        components.html(sensitivity_html, height=240)
+
+        # Store ROI in result for PDF
+        result["roi"] = roi
+
+    else:
+        st.info(
+            "Enter monthly rent above to see ROI analysis, "
+            "profit estimates, and payback period."
+        )
 
     # PDF
     st.markdown("---")
