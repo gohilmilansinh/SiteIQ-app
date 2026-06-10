@@ -331,6 +331,8 @@ elif mode == "Single Site":
                 result["mode"] = "single"
                 st.session_state.result = result
                 save_to_history(result)
+                from persistence import _get_session_id
+                st.write(f"Debug save session: {_get_session_id()}")
         else:
             st.warning(
                 "Please search or click on the map to select " "a location first."
@@ -1297,6 +1299,8 @@ elif mode == "Batch Upload":
 # HISTORY MODE
 # ════════════════════════════════════════════════════════════
 elif mode == "History":
+    from persistence import _get_session_id
+    st.write(f"Debug read session: {_get_session_id()}")
     from persistence import is_db_connected
     st.markdown("### Previously Scored Sites")
 

@@ -14,15 +14,37 @@ except ImportError:
 
 
 def _get_session_id() -> str:
-    """Get stable session ID."""
+    """Get stable session ID — stored in session state."""
     try:
         import streamlit as st
-        ctx = st.runtime.scriptrunner.get_script_run_ctx()
-        if ctx:
-            return ctx.session_id.replace("-", "")[:32]
+
+        # Store session ID in session state so it
+        # stays stable across reruns
+        if "siteiq_session_id" not in st.session_state:
+            try:
+                ctx = (
+                    st.runtime.scriptrunner
+                    .get_script_run_ctx()
+                )
+                if ctx:
+                    st.session_state.siteiq_session_id = (
+                        ctx.session_id.replace("-", "")[:32]
+                    )
+                else:
+                    import uuid
+                    st.session_state.siteiq_session_id = (
+                        uuid.uuid4().hex[:32]
+                    )
+            except Exception:
+                import uuid
+                st.session_state.siteiq_session_id = (
+                    uuid.uuid4().hex[:32]
+                )
+
+        return st.session_state.siteiq_session_id
+
     except Exception:
-        pass
-    return "local_session"
+        return "local_session"
 
 
 def load_history() -> List[Dict[str, Any]]:
