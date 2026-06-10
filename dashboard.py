@@ -101,39 +101,21 @@ def render_dashboard() -> None:
             x=scores_list,
             nbinsx=10,
             marker_color="#1D9E75",
-            marker_line_color="#0A2E26",
-            marker_line_width=1,
             opacity=0.85,
-            name="Sites",
         ))
         fig_dist.add_vline(
             x=avg_score,
             line_dash="dash",
             line_color="#BA7517",
-            annotation_text=f"Avg {avg_score}",
-            annotation_position="top right",
-            annotation_font_color="#BA7517",
         )
         fig_dist.update_layout(
             height=260,
-            paper_bgcolor="rgba(0,0,0,0)",
             margin=dict(l=10, r=10, t=10, b=40),
             showlegend=False,
-            xaxis=dict(
-                title="Score",
-                range=[0, 100],
-                gridcolor="#1a3a2a",
-                tickfont=dict(color="#9ecfc0"),
-                titlefont=dict(color="#9ecfc0"),
-            ),
-            yaxis=dict(
-                title="Sites",
-                gridcolor="#1a3a2a",
-                tickfont=dict(color="#9ecfc0"),
-                titlefont=dict(color="#9ecfc0"),
-            ),
+            paper_bgcolor="rgba(0,0,0,0)",
+            xaxis=dict(range=[0, 100]),
+            yaxis=dict(),
         )
-        fig_dist.update_traces(marker_color="#1D9E75")
         st.plotly_chart(fig_dist, use_container_width=True)
 
     with col_radar:
@@ -399,19 +381,15 @@ def render_dashboard() -> None:
         )
         fig_trend.update_layout(
             height=280,
-            plot_bgcolor="#0d1f1a",
-            paper_bgcolor="transparent",
+            paper_bgcolor="rgba(0,0,0,0)",
             xaxis=dict(
                 tickvals=list(range(len(recent))),
                 ticktext=labels,
                 tickangle=-35,
-                tickfont=dict(size=9, color="#666"),
-                gridcolor="#1a3a2a",
+                tickfont=dict(size=9),
             ),
             yaxis=dict(
                 range=[0, 105],
-                gridcolor="#1a3a2a",
-                color="#9ecfc0",
                 title="Score",
             ),
             margin=dict(l=10, r=10, t=20, b=80),
