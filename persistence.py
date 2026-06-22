@@ -14,22 +14,17 @@ except ImportError:
 
 
 def _get_session_id() -> str:
-    """Get stable session ID from browser localStorage via query param."""
+    """Get stable user ID from Supabase Auth session."""
     try:
         import streamlit as st
-        # Prefer the browser-stable uid injected via localStorage
+        from auth import get_current_user
+        user = get_current_user()
+        if user and user.get("id"):
+            return user["id"]
+        # fallback if called before auth
         if "siteiq_session_id" in st.session_state:
             return st.session_state.siteiq_session_id
-        # Fallback: read from query params directly
-        if "uid" in st.query_params:
-            sid = st.query_params["uid"]
-            st.session_state.siteiq_session_id = sid
-            return sid
-        # Last resort: generate one (won't survive refresh)
-        import uuid
-        sid = "tmp_" + uuid.uuid4().hex[:24]
-        st.session_state.siteiq_session_id = sid
-        return sid
+        return "local_session"
     except Exception:
         return "local_session"
 

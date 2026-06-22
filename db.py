@@ -50,6 +50,7 @@ def save_site(
     try:
         data = {
             "session_id":  session_id,
+            "user_id":     session_id,
             "address":     result.get("address", ""),
             "brand_type":  result.get("brand_type", "restaurant"),
             "total_score": result.get("total_score", 0),
@@ -82,7 +83,7 @@ def get_history(
         response = (
             client.table("site_history")
             .select("*")
-            .eq("session_id", session_id)
+            .eq("user_id", session_id)
             .order("scored_at", desc=True)
             .limit(limit)
             .execute()

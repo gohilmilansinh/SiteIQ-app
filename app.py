@@ -45,6 +45,30 @@ st.set_page_config(
     layout="wide",
 )
 
+# ── Auth gate ─────────────────────────────────────────────
+from auth import render_auth_page, is_logged_in, logout, get_current_user
+
+if not is_logged_in():
+    render_auth_page()
+    st.stop()
+
+# ── Logged in — show user + logout in sidebar ─────────────
+user = get_current_user()
+with st.sidebar:
+    st.markdown(
+        f"<div style='padding:12px;background:#0d1f1a;"
+        f"border-radius:8px;margin-bottom:12px'>"
+        f"<div style='font-size:11px;color:#9ecfc0'>LOGGED IN AS</div>"
+        f"<div style='font-size:13px;color:white;font-weight:600'>"
+        f"{user['name']}</div>"
+        f"<div style='font-size:11px;color:#666'>{user['email']}</div>"
+        f"</div>",
+        unsafe_allow_html=True,
+    )
+    if st.button("Logout", use_container_width=True):
+        logout()
+        st.rerun()
+
 render_header()
 
 # ── Mode selector ─────────────────────────────────────────
