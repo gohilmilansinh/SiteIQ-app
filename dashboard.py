@@ -300,8 +300,7 @@ def render_dashboard() -> None:
                 margin=dict(l=10, r=10, t=10, b=10),
                 paper_bgcolor="transparent",
                 showlegend=True,
-                legend_font_color="#9ecfc0",
-                legend_font_size=11,
+                legend=dict(font=dict(size=11)),
             )
             st.plotly_chart(fig_pie, use_container_width=True)
 
