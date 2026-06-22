@@ -298,9 +298,8 @@ def render_dashboard() -> None:
             fig_pie.update_layout(
                 height=220,
                 margin=dict(l=10, r=10, t=10, b=10),
-                paper_bgcolor="transparent",
+                paper_bgcolor="rgba(0,0,0,0)",
                 showlegend=True,
-                legend=dict(font=dict(size=11)),
             )
             st.plotly_chart(fig_pie, use_container_width=True)
 
