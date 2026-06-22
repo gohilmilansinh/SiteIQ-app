@@ -14,35 +14,22 @@ except ImportError:
 
 
 def _get_session_id() -> str:
-    """Get stable session ID — stored in session state."""
+    """Get stable session ID from browser localStorage via query param."""
     try:
         import streamlit as st
-
-        # Store session ID in session state so it
-        # stays stable across reruns
-        if "siteiq_session_id" not in st.session_state:
-            try:
-                ctx = (
-                    st.runtime.scriptrunner
-                    .get_script_run_ctx()
-                )
-                if ctx:
-                    st.session_state.siteiq_session_id = (
-                        ctx.session_id.replace("-", "")[:32]
-                    )
-                else:
-                    import uuid
-                    st.session_state.siteiq_session_id = (
-                        uuid.uuid4().hex[:32]
-                    )
-            except Exception:
-                import uuid
-                st.session_state.siteiq_session_id = (
-                    uuid.uuid4().hex[:32]
-                )
-
-        return st.session_state.siteiq_session_id
-
+        # Prefer the browser-stable uid injected via localStorage
+        if "siteiq_session_id" in st.session_state:
+            return st.session_state.siteiq_session_id
+        # Fallback: read from query params directly
+        if "uid" in st.query_params:
+            sid = st.query_params["uid"]
+            st.session_state.siteiq_session_id = sid
+            return sid
+        # Last resort: generate one (won't survive refresh)
+        import uuid
+        sid = "tmp_" + uuid.uuid4().hex[:24]
+        st.session_state.siteiq_session_id = sid
+        return sid
     except Exception:
         return "local_session"
 
@@ -106,13 +93,11 @@ from datetime import datetime
 def _get_local_path() -> str:
     try:
         import streamlit as st
-        ctx = st.runtime.scriptrunner.get_script_run_ctx()
-        if ctx:
-            sid = ctx.session_id.replace("-", "")[:16]
-            return os.path.join(
-                tempfile.gettempdir(),
-                f"siteiq_history_{sid}.json"
-            )
+        sid = _get_session_id().replace("-", "")[:24]
+        return os.path.join(
+            tempfile.gettempdir(),
+            f"siteiq_history_{sid}.json"
+        )
     except Exception:
         pass
     return os.path.join(

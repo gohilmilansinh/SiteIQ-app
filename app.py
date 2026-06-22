@@ -12,6 +12,32 @@ from persistence import load_history, save_to_history, clear_history
 import os
 import tempfile
 import pandas as pd
+import uuid
+
+def _inject_session_id():
+    session_js = """
+    <script>
+    (function() {
+        let sid = localStorage.getItem('siteiq_uid');
+        if (!sid) {
+            sid = 'u_' + Math.random().toString(36).substr(2,16);
+            localStorage.setItem('siteiq_uid', sid);
+        }
+        const url = new URL(window.parent.location.href);
+        if (url.searchParams.get('uid') !== sid) {
+            url.searchParams.set('uid', sid);
+            window.parent.history.replaceState({}, '', url.toString());
+        }
+    })();
+    </script>
+    """
+    import streamlit.components.v1 as components
+    components.html(session_js, height=0)
+
+_inject_session_id()
+
+if "uid" in st.query_params:
+    st.session_state.siteiq_session_id = st.query_params["uid"]
 
 st.set_page_config(
     page_title="SiteIQ — Retail Location Intelligence",
