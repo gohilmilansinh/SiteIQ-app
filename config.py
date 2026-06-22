@@ -76,6 +76,34 @@ BRAND_KEYWORDS: Dict[str, str] = {
     "school": "school coaching institute tuition academy",
 }
 
+# All Place types + keywords to query per brand type for competition
+COMPETITION_QUERIES: Dict[str, List[Dict]] = {
+    "restaurant": [
+        {"type": "restaurant",  "keyword": None},
+        {"type": "cafe",        "keyword": None},
+        {"type": "bakery",      "keyword": None},
+        {"type": None,          "keyword": "juice shop lassi ice cream"},
+        {"type": None,          "keyword": "vadapav chaat frankie puff snacks stall"},
+    ],
+    "pharmacy": [
+        {"type": "pharmacy",    "keyword": None},
+        {"type": None,          "keyword": "medical store chemist drugstore"},
+    ],
+    "supermarket": [
+        {"type": "supermarket", "keyword": None},
+        {"type": "grocery_or_supermarket", "keyword": None},
+        {"type": None,          "keyword": "dmart reliance big bazaar kirana"},
+    ],
+    "bank": [
+        {"type": "bank",        "keyword": None},
+        {"type": "atm",         "keyword": None},
+    ],
+    "school": [
+        {"type": "school",      "keyword": None},
+        {"type": None,          "keyword": "coaching tuition academy classes"},
+    ],
+}
+
 VERDICT_THRESHOLDS: Dict[str, float] = {
     "strong": 65.0,
     "moderate": 45.0,

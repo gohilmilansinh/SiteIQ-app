@@ -164,33 +164,44 @@ def score_footfall(
 def score_competition(
     lat: float, lng: float, brand_type: str = "restaurant"
 ) -> Tuple[float, List[Dict[str, Any]]]:
-    keyword = BRAND_KEYWORDS.get(brand_type, BRAND_KEYWORDS["restaurant"])
 
     if gmaps is None:
         logger.warning("No Google Maps client available for competition scoring.")
         return 50.0, []
 
-    try:
-        result = gmaps.places_nearby(
-            location=(lat, lng),
-            radius=500,
-            keyword=keyword,
-            type=brand_type if brand_type != "school" else "school",
-        )
-        places = result.get("results", [])
-    except Exception as exc:
-        logger.warning("Competition scoring failed: %s", exc)
-        return 50.0, []
-
-    if not places:
-        return 100.0, []
-
     import math
+    from config import COMPETITION_QUERIES
+
+    queries = COMPETITION_QUERIES.get(brand_type, COMPETITION_QUERIES["restaurant"])
+
+    # Fetch all places across multiple queries, deduplicate by place_id
+    seen_ids: set = set()
+    all_places: List[Dict[str, Any]] = []
+
+    for q in queries:
+        try:
+            kwargs = dict(location=(lat, lng), radius=500)
+            if q.get("type"):
+                kwargs["type"] = q["type"]
+            if q.get("keyword"):
+                kwargs["keyword"] = q["keyword"]
+            result = gmaps.places_nearby(**kwargs)
+            for place in result.get("results", []):
+                pid = place.get("place_id")
+                if pid and pid not in seen_ids:
+                    seen_ids.add(pid)
+                    all_places.append(place)
+        except Exception as exc:
+            logger.warning("Competition query failed (%s): %s", q, exc)
+            continue
+
+    if not all_places:
+        return 100.0, []
 
     weighted_pressure  = 0.0
     competitor_details: List[Dict[str, Any]] = []
 
-    for place in places:
+    for place in all_places:
         review_count = place.get("user_ratings_total", 0)
         rating       = place.get("rating", 3.0)
         name         = place.get("name", "Unknown")
@@ -200,25 +211,23 @@ def score_competition(
             min(math.log10(review_count) / 3.0, 1.0)
             if review_count > 0 else 0.05
         )
-        rating_weight = rating / 5.0
+        rating_weight  = rating / 5.0
         brand_strength = review_weight * 0.7 + rating_weight * 0.3
 
         # ── Distance weighting ────────────────────────────
-        location = place.get("geometry", {}).get("location", {})
+        location  = place.get("geometry", {}).get("location", {})
         place_lat = location.get("lat", lat)
         place_lng = location.get("lng", lng)
 
-        # Haversine distance in metres
-        R     = 6371000  # Earth radius in metres
-        dlat  = math.radians(place_lat - lat)
-        dlng  = math.radians(place_lng - lng)
-        a     = (math.sin(dlat / 2) ** 2 +
-                 math.cos(math.radians(lat)) *
-                 math.cos(math.radians(place_lat)) *
-                 math.sin(dlng / 2) ** 2)
+        R      = 6371000
+        dlat   = math.radians(place_lat - lat)
+        dlng   = math.radians(place_lng - lng)
+        a      = (math.sin(dlat / 2) ** 2 +
+                  math.cos(math.radians(lat)) *
+                  math.cos(math.radians(place_lat)) *
+                  math.sin(dlng / 2) ** 2)
         distance_m = R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
-        # Distance decay multiplier
         if distance_m <= 100:
             distance_weight = 1.0
         elif distance_m <= 250:
@@ -228,7 +237,6 @@ def score_competition(
         else:
             distance_weight = 0.2
 
-        # Combined competitor pressure
         pressure = brand_strength * distance_weight
         weighted_pressure += pressure
 
@@ -242,6 +250,10 @@ def score_competition(
             "strength":        round(pressure, 2),
         })
 
+    # Sort by strength descending
+    competitor_details.sort(key=lambda x: x["strength"], reverse=True)
+
+    # Scale: 10 strong competitors = score 0, 0 = score 100
     score = max(100.0 - (weighted_pressure / 10 * 100), 0.0)
     return round(score, 1), competitor_details
 
