@@ -22,30 +22,24 @@ logger = logging.getLogger(__name__)
 def cached_geocode(address: str) -> Tuple[Any, Any]:
     return geocode(address)
 
-
 def cached_demand(lat: float, lng: float, brand_type: str = "restaurant") -> Tuple[float, Dict[str, Any]]:
     return score_demand(lat, lng, brand_type)
 
-
 def cached_footfall(
-    lat: float, lng: float, brand_type: str
+    lat: float, lng: float, brand_type: str = "restaurant"
 ) -> Tuple[float, Dict[str, int]]:
     return score_footfall(lat, lng, brand_type)
 
-
 def cached_competition(
-    lat: float, lng: float, brand_type: str
+    lat: float, lng: float, brand_type: str = "restaurant"
 ) -> Tuple[float, List[Dict[str, Any]]]:
     return score_competition(lat, lng, brand_type)
-
 
 def cached_accessibility(lat: float, lng: float) -> Tuple[float, Dict[str, int]]:
     return score_accessibility(lat, lng)
 
-
 def cached_catchment(lat: float, lng: float) -> Tuple[float, int]:
     return score_catchment(lat, lng)
-
 
 def cached_spending(lat: float, lng: float) -> Tuple[float, Dict[str, Any]]:
     return score_spending_power(lat, lng)

@@ -158,7 +158,7 @@ COMPETITION_QUERIES: Dict[str, List[Dict]] = {
         {"type": None,          "keyword": "stationary xerox bookshop"},
     ],
 }
-}
+
 
 # ---------- Daytime demand signals ----------
 DAYTIME_DEMAND_SIGNALS: List[Dict] = [
@@ -248,5 +248,4 @@ BRAND_DEMAND_SIGNALS: Dict[str, List[Dict]] = {
         {"type": "park",         "keyword": None,                           "weight": 0.8},
         {"type": None,           "keyword": "stationary bookshop xerox",    "weight": 1.0},
     ],
-}
 }
