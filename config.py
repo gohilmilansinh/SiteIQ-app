@@ -57,6 +57,18 @@ FOOTFALL_ANCHORS: Dict[str, List[str]] = {
         "shopping_mall", "supermarket", "gym",
         "restaurant", "bus_station",
     ],
+    "healthcare": [
+        "hospital", "doctor", "pharmacy",
+        "bus_station", "residential_area",
+    ],
+    "fitness": [
+        "residential_area", "park", "university",
+        "bus_station", "supermarket",
+    ],
+    "education": [
+        "residential_area", "bus_station", "library",
+        "park", "supermarket",
+    ],
 }
 
 BRAND_KEYWORDS: Dict[str, str] = {
@@ -67,6 +79,9 @@ BRAND_KEYWORDS: Dict[str, str] = {
     "school":      "school coaching institute tuition academy",
     "clothing":    "clothing fashion apparel garments boutique",
     "beauty":      "beauty salon parlour cosmetics skincare spa",
+    "healthcare":  "hospital clinic nursing home ayurvedic health centre",
+    "fitness":     "gym fitness yoga meditation physiotherapy wellness",
+    "education":   "school college university coaching institute academy",
 }
 
 VERDICT_THRESHOLDS: Dict[str, float] = {
@@ -120,6 +135,29 @@ COMPETITION_QUERIES: Dict[str, List[Dict]] = {
         {"type": None,           "keyword": "lakme nykaa cosmetics skincare"},
         {"type": None,           "keyword": "nail art tattoo piercing grooming"},
     ],
+    "healthcare": [
+        {"type": "hospital",    "keyword": None},
+        {"type": "doctor",      "keyword": None},
+        {"type": None,          "keyword": "clinic nursing home health centre"},
+        {"type": None,          "keyword": "ayurvedic herbal homeopathy"},
+        {"type": None,          "keyword": "pathology lab diagnostic centre"},
+    ],
+    "fitness": [
+        {"type": "gym",         "keyword": None},
+        {"type": None,          "keyword": "fitness centre crossfit zumba"},
+        {"type": None,          "keyword": "yoga classes meditation centre"},
+        {"type": None,          "keyword": "physiotherapy rehabilitation"},
+        {"type": None,          "keyword": "spa wellness massage centre"},
+    ],
+    "education": [
+        {"type": "school",      "keyword": None},
+        {"type": "university",  "keyword": None},
+        {"type": None,          "keyword": "college institute polytechnic"},
+        {"type": None,          "keyword": "coaching tuition classes academy"},
+        {"type": None,          "keyword": "vocational training skill centre"},
+        {"type": None,          "keyword": "stationary xerox bookshop"},
+    ],
+}
 }
 
 # ---------- Daytime demand signals ----------
@@ -181,4 +219,34 @@ BRAND_DEMAND_SIGNALS: Dict[str, List[Dict]] = {
         {"type": "bus_station",  "keyword": None,                          "weight": 1.0},
         {"type": None,           "keyword": "office complex working women", "weight": 1.5},
     ],
+    "healthcare": [
+        # Demand driven by existing patient population nearby
+        {"type": "hospital",     "keyword": None,                           "weight": 2.0},
+        {"type": None,           "keyword": "clinic nursing home doctor",   "weight": 2.5},
+        {"type": None,           "keyword": "residential apartments housing","weight": 2.0},
+        {"type": "bus_station",  "keyword": None,                           "weight": 1.5},
+        {"type": None,           "keyword": "pathology lab diagnostic",     "weight": 1.5},
+        {"type": "pharmacy",     "keyword": None,                           "weight": 1.0},
+    ],
+    "fitness": [
+        # Demand driven by young population + residential density
+        {"type": "university",   "keyword": None,                           "weight": 2.5},
+        {"type": None,           "keyword": "college institute",            "weight": 2.0},
+        {"type": "park",         "keyword": None,                           "weight": 1.5},
+        {"type": None,           "keyword": "residential apartments housing","weight": 2.0},
+        {"type": "office",       "keyword": None,                           "weight": 1.5},
+        {"type": None,           "keyword": "office complex IT park",       "weight": 1.5},
+        {"type": "bus_station",  "keyword": None,                           "weight": 1.0},
+    ],
+    "education": [
+        # Demand driven by residential families + young population
+        {"type": None,           "keyword": "residential apartments housing","weight": 2.5},
+        {"type": "university",   "keyword": None,                           "weight": 2.0},
+        {"type": None,           "keyword": "college institute",            "weight": 1.5},
+        {"type": "school",       "keyword": None,                           "weight": 1.5},
+        {"type": "bus_station",  "keyword": None,                           "weight": 1.5},
+        {"type": "park",         "keyword": None,                           "weight": 0.8},
+        {"type": None,           "keyword": "stationary bookshop xerox",    "weight": 1.0},
+    ],
+}
 }

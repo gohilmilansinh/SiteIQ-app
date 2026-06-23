@@ -61,6 +61,30 @@ VARIABLE_AVERAGES = {
         "catchment":      70.0,
         "spending_power": 55.0,
     },
+    "healthcare": {
+        "demand":         72.0,
+        "footfall":       70.0,
+        "competition":    55.0,
+        "accessibility":  80.0,
+        "catchment":      68.0,
+        "spending_power": 48.0,
+    },
+    "fitness": {
+        "demand":         68.0,
+        "footfall":       72.0,
+        "competition":    58.0,
+        "accessibility":  78.0,
+        "catchment":      65.0,
+        "spending_power": 54.0,
+    },
+    "education": {
+        "demand":         74.0,
+        "footfall":       68.0,
+        "competition":    52.0,
+        "accessibility":  76.0,
+        "catchment":      66.0,
+        "spending_power": 47.0,
+    },
 }
 
 WEIGHTS = {
