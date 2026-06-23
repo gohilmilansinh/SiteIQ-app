@@ -536,11 +536,12 @@ def render_dashboard() -> None:
                 background:white;padding:12px 16px;
                 border-radius:8px;border:1px solid #ddd;
                 font-family:sans-serif;font-size:12px;
+                color:#333;
                 box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:999'>
-      <div style='font-weight:700;margin-bottom:8px'>Ward Score Legend</div>
-      <div><span style='color:#1D9E75'>●</span> Strong (65+)</div>
-      <div><span style='color:#BA7517'>●</span> Moderate (45–64)</div>
-      <div><span style='color:#C0392B'>●</span> Weak (&lt;45)</div>
+      <div style='font-weight:700;margin-bottom:8px;color:#111'>Ward Score Legend</div>
+      <div style='margin-bottom:4px'><span style='color:#1D9E75'>●</span> Strong (65+)</div>
+      <div style='margin-bottom:4px'><span style='color:#BA7517'>●</span> Moderate (45–64)</div>
+      <div style='margin-bottom:4px'><span style='color:#C0392B'>●</span> Weak (&lt;45)</div>
       <div><span style='color:#888'>●</span> Opportunity (unscored)</div>
     </div>
     """
