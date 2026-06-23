@@ -67,7 +67,8 @@ def score_batch(
         # Validate brand type
         valid_types = [
             "restaurant", "pharmacy",
-            "supermarket", "bank", "school"
+            "supermarket", "bank", "school",
+            "clothing", "beauty"
         ]
         if brand_type not in valid_types:
             brand_type = "restaurant"

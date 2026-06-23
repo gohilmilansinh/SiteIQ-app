@@ -45,6 +45,22 @@ VARIABLE_AVERAGES = {
         "catchment":     68.0,
         "spending_power": 49.0,
     },
+    "clothing": {
+        "demand":         70.0,
+        "footfall":       75.0,
+        "competition":    50.0,
+        "accessibility":  80.0,
+        "catchment":      72.0,
+        "spending_power": 58.0,
+    },
+    "beauty": {
+        "demand":         68.0,
+        "footfall":       72.0,
+        "competition":    52.0,
+        "accessibility":  78.0,
+        "catchment":      70.0,
+        "spending_power": 55.0,
+    },
 }
 
 WEIGHTS = {

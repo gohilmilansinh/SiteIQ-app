@@ -23,8 +23,8 @@ def cached_geocode(address: str) -> Tuple[Any, Any]:
     return geocode(address)
 
 
-def cached_demand(lat: float, lng: float) -> Tuple[float, Dict[str, Any]]:
-    return score_demand(lat, lng)
+def cached_demand(lat: float, lng: float, brand_type: str = "restaurant") -> Tuple[float, Dict[str, Any]]:
+    return score_demand(lat, lng, brand_type)
 
 
 def cached_footfall(
@@ -113,7 +113,7 @@ else:
     gmaps = None
 
 
-def score_demand(lat: float, lng: float) -> Tuple[float, Dict[str, Any]]:
+def score_demand(lat: float, lng: float, brand_type: str = "restaurant") -> Tuple[float, Dict[str, Any]]:
     try:
         from config import DAYTIME_DEMAND_SIGNALS
 
@@ -139,10 +139,12 @@ def score_demand(lat: float, lng: float) -> Tuple[float, Dict[str, Any]]:
         daytime_found = {}
 
         if gmaps is not None:
+            from config import BRAND_DEMAND_SIGNALS
+            signals = BRAND_DEMAND_SIGNALS.get(brand_type, DAYTIME_DEMAND_SIGNALS)
             seen_ids: set = set()
             total_weighted = 0.0
 
-            for signal in DAYTIME_DEMAND_SIGNALS:
+            for signal in signals:
                 try:
                     kwargs = dict(location=(lat, lng), radius=1000)
                     if signal.get("type"):
@@ -396,7 +398,7 @@ def score_site(address: str, brand_type: str = "restaurant") -> Dict[str, Any]:
             )
         }
 
-    demand_score, demand_data = cached_demand(lat, lng)
+    demand_score, demand_data = cached_demand(lat, lng, brand_type)
     footfall_score, footfall_found = cached_footfall(lat, lng, brand_type)
     competition_score, competitor_details = cached_competition(lat, lng, brand_type)
     access_score, access_data = cached_accessibility(lat, lng)
