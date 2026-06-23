@@ -6,6 +6,10 @@ import plotly.graph_objects as go
 import plotly.express as px
 import streamlit.components.v1 as components
 from persistence import load_history, is_db_connected
+import folium
+from streamlit_folium import st_folium
+import json
+from census_data import WARD_DATA
 
 
 def _score_color(score: float) -> str:
@@ -389,7 +393,160 @@ def render_dashboard() -> None:
         )
         st.plotly_chart(fig_trend, use_container_width=True)
 
-    st.caption(
-        "SiteIQ Analytics · Dashboard · "
-        "Showing last 50 scored sites"
+    st.markdown("---")
+
+    # ── Ward-level heatmap ────────────────────────────────
+    st.markdown("**Ward Coverage Heatmap**")
+    st.markdown(
+        "<div style='font-size:12px;color:#888;margin-bottom:12px'>"
+        "Green = strong scored sites · Amber = moderate · Red = weak · "
+        "Grey = unscored opportunity zones</div>",
+        unsafe_allow_html=True,
+    )
+
+    # Find which cities user has scored sites in
+    scored_cities = set()
+    for h in scored:
+        addr_lower = h.get("address", "").lower()
+        for city in ["ahmedabad", "surat", "vadodara", "baroda", "rajkot"]:
+            if city in addr_lower:
+                scored_cities.add(city)
+    # baroda = vadodara
+    if "baroda" in scored_cities:
+        scored_cities.add("vadodara")
+
+    # Filter wards to only cities user has scored in
+    # If none detected, show all
+    if scored_cities:
+        visible_wards = [
+            w for w in WARD_DATA
+            if w["city"].lower() in scored_cities
+        ]
+    else:
+        visible_wards = WARD_DATA
+
+    # Build ward score lookup
+    # Match scored sites to nearest ward by haversine distance
+    import math
+
+    def _hav(lat1, lng1, lat2, lng2):
+        R = 6371
+        dlat = math.radians(lat2 - lat1)
+        dlng = math.radians(lng2 - lng1)
+        a = (math.sin(dlat/2)**2 +
+             math.cos(math.radians(lat1)) *
+             math.cos(math.radians(lat2)) *
+             math.sin(dlng/2)**2)
+        return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+
+    ward_scores: Dict[str, list] = {}
+    for h in scored:
+        if not h.get("lat") or not h.get("lng"):
+            continue
+        # Find nearest ward within 3km
+        nearest_ward = None
+        nearest_dist = 999
+        for w in WARD_DATA:
+            d = _hav(h["lat"], h["lng"], w["lat"], w["lng"])
+            if d < nearest_dist:
+                nearest_dist = d
+                nearest_ward = w["name"]
+        if nearest_ward and nearest_dist < 3.0:
+            if nearest_ward not in ward_scores:
+                ward_scores[nearest_ward] = []
+            ward_scores[nearest_ward].append(h["total_score"])
+
+    # Center map on scored cities
+    if visible_wards:
+        center_lat = sum(w["lat"] for w in visible_wards) / len(visible_wards)
+        center_lng = sum(w["lng"] for w in visible_wards) / len(visible_wards)
+    else:
+        center_lat, center_lng = 22.9734, 72.6961  # Gujarat center
+
+    m = folium.Map(
+        location=[center_lat, center_lng],
+        zoom_start=11,
+        tiles="CartoDB positron",
+    )
+
+    for ward in visible_wards:
+        wname = ward["name"]
+        if wname in ward_scores:
+            avg = round(sum(ward_scores[wname]) / len(ward_scores[wname]), 1)
+            count = len(ward_scores[wname])
+            if avg >= 65:
+                color    = "#1D9E75"
+                verdict  = "Strong"
+                fill_op  = 0.6
+            elif avg >= 45:
+                color    = "#BA7517"
+                verdict  = "Moderate"
+                fill_op  = 0.5
+            else:
+                color    = "#C0392B"
+                verdict  = "Weak"
+                fill_op  = 0.5
+
+            popup_text = (
+                f"<b>{wname}</b> · {ward['city']}<br>"
+                f"Avg Score: {avg}/100 · {verdict}<br>"
+                f"Sites scored: {count}<br>"
+                f"Population: {ward['population']:,}"
+            )
+            tooltip = f"{wname}: {avg}/100 ({count} sites)"
+        else:
+            color    = "#888888"
+            verdict  = "Unscored"
+            fill_op  = 0.15
+            popup_text = (
+                f"<b>{wname}</b> · {ward['city']}<br>"
+                f"⚪ Not yet scored — opportunity zone<br>"
+                f"Population: {ward['population']:,}<br>"
+                f"Households: {ward['households']:,}"
+            )
+            tooltip = f"{wname}: Opportunity zone"
+
+        folium.Circle(
+            location=[ward["lat"], ward["lng"]],
+            radius=900,
+            color=color,
+            fill=True,
+            fill_color=color,
+            fill_opacity=fill_op,
+            weight=1.5,
+            popup=folium.Popup(popup_text, max_width=220),
+            tooltip=tooltip,
+        ).add_to(m)
+
+        # Add ward name label
+        folium.Marker(
+            location=[ward["lat"], ward["lng"]],
+            icon=folium.DivIcon(
+                html=f"<div style='font-size:9px;color:#333;"
+                     f"font-weight:600;white-space:nowrap;"
+                     f"text-shadow:0 0 3px white'>{wname}</div>",
+                icon_size=(80, 20),
+                icon_anchor=(40, 10),
+            ),
+        ).add_to(m)
+
+    # Legend
+    legend_html = """
+    <div style='position:fixed;bottom:30px;left:30px;
+                background:white;padding:12px 16px;
+                border-radius:8px;border:1px solid #ddd;
+                font-family:sans-serif;font-size:12px;
+                box-shadow:0 2px 8px rgba(0,0,0,0.15);z-index:999'>
+      <div style='font-weight:700;margin-bottom:8px'>Ward Score Legend</div>
+      <div><span style='color:#1D9E75'>●</span> Strong (65+)</div>
+      <div><span style='color:#BA7517'>●</span> Moderate (45–64)</div>
+      <div><span style='color:#C0392B'>●</span> Weak (&lt;45)</div>
+      <div><span style='color:#888'>●</span> Opportunity (unscored)</div>
+    </div>
+    """
+    m.get_root().html.add_child(folium.Element(legend_html))
+
+    st_folium(m, width="100%", height=500, returned_objects=[])
+
+    st.caption("SiteIQ Analytics · Dashboard · Showing last 50 scored sites")
     )
