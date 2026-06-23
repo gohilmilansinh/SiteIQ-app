@@ -17,7 +17,7 @@ def _wrap_cache(fn, ttl: int = 3600):
 
 
 cached_geocode = _wrap_cache(lambda address: scorer.geocode(address))
-cached_demand = _wrap_cache(lambda lat, lng: scorer.score_demand(lat, lng))
+cached_demand = _wrap_cache(lambda lat, lng, brand_type="restaurant": scorer.score_demand(lat, lng, brand_type))
 cached_footfall = _wrap_cache(lambda lat, lng, bt: scorer.score_footfall(lat, lng, bt))
 cached_competition = _wrap_cache(
     lambda lat, lng, bt: scorer.score_competition(lat, lng, bt)
@@ -31,7 +31,7 @@ cached_spending = _wrap_cache(lambda lat, lng: scorer.score_spending_power(lat, 
 
 if st:
 
-    @st.cache_data(ttl=3600)
+    @st.cache_data(ttl=3600, hash_funcs={str: lambda x: x})
     def score_site(address: str, brand_type: str = "restaurant") -> Dict[str, Any]:
         return scorer.score_site(address, brand_type)
 
