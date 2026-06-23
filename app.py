@@ -1426,7 +1426,7 @@ elif mode == "History":
         if not filtered:
             st.warning("No results match your search.")
         else:
-            for entry in filtered:
+            for i, entry in enumerate(filtered):
                 vc = (
                     "#1D9E75"
                     if entry["verdict"] == "Strong"
@@ -1531,7 +1531,7 @@ elif mode == "History":
                     # Re-score button
                     if st.button(
                         "Re-score this site",
-                        key=f"rescore_{entry['address'][:20]}"
+                        key=f"rescore_{i}_{entry['address'][:15]}"
                     ):
                         st.session_state.result = None
                         st.info(
