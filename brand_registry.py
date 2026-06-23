@@ -186,6 +186,32 @@ KNOWN_BRANDS: Dict[str, List[Dict]] = {
 }
 
 
+def _name_matches(place_name: str, brand_name: str) -> bool:
+    """
+    Fuzzy match — checks if brand name words appear in place name.
+    Handles variations like DMart/D-Mart/D Mart,
+    Domino's/Dominos, McDonald's/McDonalds etc.
+    """
+    # Normalize both — remove punctuation, lowercase
+    import re
+    def normalize(s):
+        return re.sub(r"[^a-z0-9 ]", " ", s.lower()).strip()
+
+    place_norm = normalize(place_name)
+    brand_norm = normalize(brand_name)
+
+    # Direct substring match after normalization
+    if brand_norm in place_norm:
+        return True
+
+    # Word-level match — all significant words of brand must appear
+    brand_words = [w for w in brand_norm.split() if len(w) > 2]
+    if brand_words and all(w in place_norm for w in brand_words):
+        return True
+
+    return False
+
+
 def detect_known_brands(
     competitor_details: list,
     brand_type: str,
@@ -199,10 +225,10 @@ def detect_known_brands(
     seen_brands = set()
 
     for comp in competitor_details:
-        name = comp.get("name", "").lower()
+        place_name = comp.get("name", "")
         for brand in known:
-            brand_lower = brand["name"].lower()
-            if brand_lower in name and brand["name"] not in seen_brands:
+            if (brand["name"] not in seen_brands and
+                    _name_matches(place_name, brand["name"])):
                 seen_brands.add(brand["name"])
                 detected.append({
                     "brand":      brand["name"],
