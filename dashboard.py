@@ -549,4 +549,3 @@ def render_dashboard() -> None:
     st_folium(m, width="100%", height=500, returned_objects=[])
 
     st.caption("SiteIQ Analytics · Dashboard · Showing last 50 scored sites")
-    )
