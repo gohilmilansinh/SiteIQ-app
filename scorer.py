@@ -115,25 +115,84 @@ else:
 
 def score_demand(lat: float, lng: float) -> Tuple[float, Dict[str, Any]]:
     try:
+        from config import DAYTIME_DEMAND_SIGNALS
+
+        # ── Residential score (40%) ───────────────────────
         pop_score, pop_data = score_population(lat, lng)
 
         if pop_data["estimated_population"] == 0:
-            tags = {"building": ["residential", "apartments", "house"]}
-            b = ox.features_from_point((lat, lng), tags=tags, dist=1000)
-            count = len(b)
-            return round(min(count / 200 * 100, 100), 1), {
-                "method": "osm_buildings",
-                "count": count,
-                "population": 0,
-                "households": 0,
-            }
+            # OSM building fallback
+            try:
+                tags = {"building": ["residential", "apartments", "house"]}
+                b = ox.features_from_point((lat, lng), tags=tags, dist=1000)
+                pop_score = round(min(len(b) / 200 * 100, 100), 1)
+                pop_data = {"method": "osm_buildings", "count": len(b),
+                            "population": 0, "households": 0}
+            except Exception:
+                pop_score = 30.0
+                pop_data  = {"method": "fallback", "population": 0, "households": 0}
+        else:
+            pop_data["method"] = "census_2011"
 
-        return pop_score, {
-            "method": "census_2011",
-            "population": pop_data["estimated_population"],
-            "households": pop_data["estimated_households"],
-            "wards": pop_data["contributing_wards"],
+        # ── Daytime signals score (60%) ───────────────────
+        daytime_score = 0.0
+        daytime_found = {}
+
+        if gmaps is not None:
+            seen_ids: set = set()
+            total_weighted = 0.0
+
+            for signal in DAYTIME_DEMAND_SIGNALS:
+                try:
+                    kwargs = dict(location=(lat, lng), radius=1000)
+                    if signal.get("type"):
+                        kwargs["type"] = signal["type"]
+                    if signal.get("keyword"):
+                        kwargs["keyword"] = signal["keyword"]
+
+                    result  = gmaps.places_nearby(**kwargs)
+                    places  = result.get("results", [])
+                    new_places = [
+                        p for p in places
+                        if p.get("place_id") not in seen_ids
+                    ]
+                    for p in new_places:
+                        seen_ids.add(p.get("place_id"))
+
+                    if new_places:
+                        label = signal.get("type") or signal.get("keyword", "")[:20]
+                        count = len(new_places)
+                        daytime_found[label] = count
+                        # Weighted contribution — capped per signal type
+                        contribution = min(count, 5) * signal["weight"]
+                        total_weighted += contribution
+
+                except Exception as exc:
+                    logger.warning("Daytime signal query failed (%s): %s", signal, exc)
+                    continue
+
+            # Scale: 50 weighted points = score 100
+            daytime_score = round(min(total_weighted / 50 * 100, 100), 1)
+        else:
+            logger.warning("No Google Maps client — daytime demand signals skipped.")
+            daytime_score = pop_score  # fall back to residential only
+
+        # ── Combined score ────────────────────────────────
+        combined = round(pop_score * 0.40 + daytime_score * 0.60, 1)
+
+        return combined, {
+            "method":         pop_data.get("method", "census_2011"),
+            "population":     pop_data.get("estimated_population",
+                              pop_data.get("population", 0)),
+            "households":     pop_data.get("estimated_households",
+                              pop_data.get("households", 0)),
+            "wards":          pop_data.get("contributing_wards",
+                              pop_data.get("wards", [])),
+            "residential_score": pop_score,
+            "daytime_score":     daytime_score,
+            "daytime_signals":   daytime_found,
         }
+
     except Exception as exc:
         logger.warning("Demand scoring failed: %s", exc)
         return 30.0, {"method": "fallback", "population": 0, "households": 0}
@@ -371,11 +430,14 @@ def score_site(address: str, brand_type: str = "restaurant") -> Dict[str, Any]:
         "verdict": verdict,
         "competitor_details": competitor_details,
         "raw": {
-            "demand_buildings": demand_data.get("count", 0),
-            "demand_population": demand_data.get("population", 0),
-            "demand_households": demand_data.get("households", 0),
-            "demand_method": demand_data.get("method", "unknown"),
-            "demand_wards": demand_data.get("wards", []),
+            "demand_buildings":        demand_data.get("count", 0),
+            "demand_population":       demand_data.get("population", 0),
+            "demand_households":       demand_data.get("households", 0),
+            "demand_method":           demand_data.get("method", "unknown"),
+            "demand_wards":            demand_data.get("wards", []),
+            "demand_residential_score": demand_data.get("residential_score", 0),
+            "demand_daytime_score":    demand_data.get("daytime_score", 0),
+            "demand_daytime_signals":  demand_data.get("daytime_signals", {}),
             "footfall_anchors": footfall_found,
             "intersections": access_data["intersections"],
             "road_nodes": access_data["total_nodes"],

@@ -108,3 +108,29 @@ VERDICT_THRESHOLDS: Dict[str, float] = {
     "strong": 65.0,
     "moderate": 45.0,
 }
+
+# Daytime demand signals — place types + weights
+# Higher weight = stronger demand generator
+DAYTIME_DEMAND_SIGNALS: List[Dict] = [
+    # Education — students generate massive consistent daytime footfall
+    {"type": "university",       "keyword": None,                        "weight": 3.0},
+    {"type": "school",           "keyword": None,                        "weight": 1.5},
+    {"type": None,               "keyword": "college institute polytechnic", "weight": 2.5},
+    {"type": None,               "keyword": "coaching tuition classes academy", "weight": 1.5},
+
+    # Office / commercial — working population
+    {"type": "office",           "keyword": None,                        "weight": 1.5},
+    {"type": None,               "keyword": "office complex business park IT park", "weight": 2.0},
+
+    # Transit — people passing through
+    {"type": "bus_station",      "keyword": None,                        "weight": 2.0},
+    {"type": "transit_station",  "keyword": None,                        "weight": 2.0},
+    {"type": None,               "keyword": "BRTS AMTS bus stop",        "weight": 1.5},
+
+    # Attractions — people come here intentionally
+    {"type": "hospital",         "keyword": None,                        "weight": 1.5},
+    {"type": "park",             "keyword": None,                        "weight": 1.0},
+    {"type": None,               "keyword": "market bazaar shopping complex", "weight": 1.5},
+    {"type": "tourist_attraction","keyword": None,                       "weight": 1.0},
+    {"type": None,               "keyword": "temple mandir masjid church", "weight": 0.8},
+]
