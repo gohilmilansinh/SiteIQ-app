@@ -89,10 +89,13 @@ COMPETITION_QUERIES: Dict[str, List[Dict]] = {
         {"type": None,          "keyword": "apollo medplus wellness forever"},
     ],
     "supermarket": [
-        {"type": "supermarket", "keyword": None},
+        {"type": "supermarket",            "keyword": None},
         {"type": "grocery_or_supermarket", "keyword": None},
-        {"type": None,          "keyword": "dmart reliance big bazaar"},
-        {"type": None,          "keyword": "kirana general store provisions"},
+        {"type": None, "keyword": "dmart"},
+        {"type": None, "keyword": "reliance smart reliance fresh reliance mart"},
+        {"type": None, "keyword": "big bazaar star bazaar vishal mega mart"},
+        {"type": None, "keyword": "kirana general store provisions"},
+        {"type": None, "keyword": "wholesale grocery cash and carry"},
     ],
     "bank": [
         {"type": "bank",        "keyword": None},
