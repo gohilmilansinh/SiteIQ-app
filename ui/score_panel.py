@@ -12,6 +12,7 @@ from benchmarks import get_category_context
 import os
 from roi_calculator import calculate_roi
 from score_explainer import explain_scores
+from brand_registry import detect_known_brands
 
 
 def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
@@ -347,6 +348,65 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
     # ── Nearby Competitors ────────────────────────────────
     if result.get("competitor_details"):
         st.markdown("### Nearby Competitors")
+
+        # ── Known brand flags ─────────────────────────────
+        known_brands = detect_known_brands(
+            result["competitor_details"], brand_type
+        )
+        if known_brands:
+            threat_colors = {
+                "high":   "#C0392B",
+                "medium": "#BA7517",
+                "low":    "#1D9E75",
+            }
+            threat_labels = {
+                "high":   "HIGH THREAT",
+                "medium": "MEDIUM THREAT",
+                "low":    "LOW THREAT",
+            }
+            threat_icons = {
+                "high":   "🔴",
+                "medium": "🟡",
+                "low":    "🟢",
+            }
+
+            st.markdown(
+                "<div style='background:#1a0e0e;border:1px solid #C0392B;"
+                "border-radius:10px;padding:14px 16px;margin-bottom:16px'>"
+                "<div style='font-size:11px;font-weight:700;color:#e08080;"
+                "letter-spacing:1px;margin-bottom:10px'>⚠️ KNOWN BRANDS DETECTED NEARBY</div>"
+                + "".join([
+                    f"<div style='display:flex;justify-content:space-between;"
+                    f"align-items:center;padding:8px 10px;margin-bottom:6px;"
+                    f"background:#111;border-radius:6px;"
+                    f"border-left:3px solid {threat_colors[b['threat']]}'>"
+                    f"<div>"
+                    f"<span style='font-size:13px;font-weight:700;color:white'>"
+                    f"{threat_icons[b['threat']]} {b['brand']}</span>"
+                    f"<span style='font-size:11px;color:#666;margin-left:10px'>"
+                    f"{b['distance_m']}m away</span>"
+                    f"</div>"
+                    f"<div style='text-align:right'>"
+                    f"<div style='font-size:10px;font-weight:700;"
+                    f"color:{threat_colors[b['threat']]};"
+                    f"letter-spacing:0.5px'>{threat_labels[b['threat']]}</div>"
+                    f"<div style='font-size:10px;color:#666'>"
+                    f"★ {b['rating']} · {b['reviews']:,} reviews</div>"
+                    f"</div></div>"
+                    for b in known_brands
+                ])
+                + "</div>",
+                unsafe_allow_html=True,
+            )
+        else:
+            st.markdown(
+                "<div style='background:#0d1f1a;border:1px solid #1D9E75;"
+                "border-radius:8px;padding:10px 14px;margin-bottom:16px;"
+                "font-size:12px;color:#9ecfc0'>"
+                "✅ No major national/regional chains detected nearby</div>",
+                unsafe_allow_html=True,
+            )
+
         competitors = sorted(
             result["competitor_details"],
             key=lambda x: x.get("strength", 0),
