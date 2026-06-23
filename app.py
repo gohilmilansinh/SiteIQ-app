@@ -365,29 +365,35 @@ elif mode == "Single Site":
     components.html(search_html, height=370, scrolling=False)
 
     # ── Score button ──────────────────────────────────────
-    if st.button("Score This Site", type="primary", use_container_width=True):
-        # Re-read address from query params in case updated by map
-        if "address" in st.query_params:
-            st.session_state.search_address = st.query_params["address"]
-        addr = st.session_state.get("search_address", "").strip()
-        if addr:
-            with st.spinner("Analysing location..."):
-                result = score_site(addr, brand_type)
-            if not result:
-                st.session_state.result = None
-                st.error("Something went wrong. Please try again.")
-            elif "error" in result:
-                st.session_state.result = None
-                st.error(result["error"])
-            else:
-                result["mode"] = "single"
-                st.session_state.result = result
-                save_to_history(result)
+    col_score, col_clear = st.columns([4, 1])
+    with col_clear:
+        if st.button("Clear Cache", use_container_width=True):
+            st.cache_data.clear()
+            st.success("Cache cleared.")
+    with col_score:
+        if st.button("Score This Site", type="primary", use_container_width=True):
+            # Re-read address from query params in case updated by map
+            if "address" in st.query_params:
+                st.session_state.search_address = st.query_params["address"]
+            addr = st.session_state.get("search_address", "").strip()
+            if addr:
+                with st.spinner("Analysing location..."):
+                    result = score_site(addr, brand_type)
+                if not result:
+                    st.session_state.result = None
+                    st.error("Something went wrong. Please try again.")
+                elif "error" in result:
+                    st.session_state.result = None
+                    st.error(result["error"])
+                else:
+                    result["mode"] = "single"
+                    st.session_state.result = result
+                    save_to_history(result)
 
-        else:
-            st.warning(
-                "Please search or click on the map to select " "a location first."
-            )
+            else:
+                st.warning(
+                    "Please search or click on the map to select " "a location first."
+                )
 
     # ── Results ───────────────────────────────────────────
     if st.session_state.result and "error" not in st.session_state.result:
