@@ -69,6 +69,18 @@ FOOTFALL_ANCHORS: Dict[str, List[str]] = {
         "residential_area", "bus_station", "library",
         "park", "supermarket",
     ],
+    "hardware": [
+        "shopping_mall", "supermarket", "bus_station",
+        "bank", "residential_area",
+    ],
+    "cinema": [
+        "shopping_mall", "restaurant", "bus_station",
+        "parking", "supermarket",
+    ],
+    "automotive": [
+        "car_repair", "gas_station", "bus_station",
+        "parking", "bank",
+    ],
 }
 
 BRAND_KEYWORDS: Dict[str, str] = {
@@ -82,6 +94,9 @@ BRAND_KEYWORDS: Dict[str, str] = {
     "healthcare":  "hospital clinic nursing home ayurvedic health centre",
     "fitness":     "gym fitness yoga meditation physiotherapy wellness",
     "education":   "school college university coaching institute academy",
+    "hardware":    "hardware home improvement tools furniture interior",
+    "cinema":      "cinema multiplex theatre PVR INOX movies",
+    "automotive":  "car bike showroom automobile service center EV",
 }
 
 VERDICT_THRESHOLDS: Dict[str, float] = {
@@ -156,6 +171,27 @@ COMPETITION_QUERIES: Dict[str, List[Dict]] = {
         {"type": None,          "keyword": "coaching tuition classes academy"},
         {"type": None,          "keyword": "vocational training skill centre"},
         {"type": None,          "keyword": "stationary xerox bookshop"},
+    ],
+    "hardware": [
+        {"type": None,          "keyword": "hardware tools home improvement"},
+        {"type": None,          "keyword": "mr diy furniture interior design"},
+        {"type": None,          "keyword": "electrical plumbing sanitary"},
+        {"type": None,          "keyword": "paint wallpaper decor"},
+        {"type": None,          "keyword": "building material construction supply"},
+    ],
+    "cinema": [
+        {"type": "movie_theater", "keyword": None},
+        {"type": None,            "keyword": "PVR INOX cinepolis multiplex"},
+        {"type": None,            "keyword": "cinema theatre movies"},
+    ],
+    "automotive": [
+        {"type": "car_dealer",    "keyword": None},
+        {"type": "car_repair",    "keyword": None},
+        {"type": None,            "keyword": "bike showroom two wheeler motorcycle"},
+        {"type": None,            "keyword": "EV electric vehicle Tesla Tata Ather"},
+        {"type": None,            "keyword": "tyre shop ceat mrf apollo bridgestone"},
+        {"type": None,            "keyword": "car accessories detailing coating wash"},
+        {"type": None,            "keyword": "automobile parts service center"},
     ],
 }
 
@@ -247,5 +283,34 @@ BRAND_DEMAND_SIGNALS: Dict[str, List[Dict]] = {
         {"type": "bus_station",  "keyword": None,                           "weight": 1.5},
         {"type": "park",         "keyword": None,                           "weight": 0.8},
         {"type": None,           "keyword": "stationary bookshop xerox",    "weight": 1.0},
+    ],
+    "hardware": [
+        # Demand from residential + construction activity nearby
+        {"type": None,           "keyword": "residential apartments housing",  "weight": 2.5},
+        {"type": None,           "keyword": "construction building real estate","weight": 2.0},
+        {"type": "shopping_mall","keyword": None,                              "weight": 1.5},
+        {"type": "bus_station",  "keyword": None,                              "weight": 1.5},
+        {"type": None,           "keyword": "office complex IT park",          "weight": 1.0},
+        {"type": "supermarket",  "keyword": None,                              "weight": 1.0},
+    ],
+    "cinema": [
+        # Demand from young population + mall + entertainment zones
+        {"type": "shopping_mall","keyword": None,                              "weight": 3.0},
+        {"type": "university",   "keyword": None,                              "weight": 2.5},
+        {"type": None,           "keyword": "college institute",               "weight": 2.0},
+        {"type": "restaurant",   "keyword": None,                              "weight": 1.5},
+        {"type": "bus_station",  "keyword": None,                              "weight": 1.5},
+        {"type": None,           "keyword": "market commercial high street",   "weight": 1.5},
+        {"type": "parking",      "keyword": None,                              "weight": 1.0},
+    ],
+    "automotive": [
+        # Demand from highway access + commercial zones + middle income residential
+        {"type": "gas_station",  "keyword": None,                              "weight": 2.0},
+        {"type": None,           "keyword": "highway ring road arterial road", "weight": 2.5},
+        {"type": None,           "keyword": "residential apartments housing",  "weight": 1.5},
+        {"type": "bank",         "keyword": None,                              "weight": 1.5},
+        {"type": None,           "keyword": "office complex commercial",       "weight": 1.5},
+        {"type": "bus_station",  "keyword": None,                              "weight": 1.0},
+        {"type": None,           "keyword": "parking lot vehicle",             "weight": 1.0},
     ],
 }

@@ -85,6 +85,30 @@ VARIABLE_AVERAGES = {
         "catchment":      66.0,
         "spending_power": 47.0,
     },
+    "hardware": {
+        "demand":         68.0,
+        "footfall":       65.0,
+        "competition":    55.0,
+        "accessibility":  82.0,
+        "catchment":      66.0,
+        "spending_power": 50.0,
+    },
+    "cinema": {
+        "demand":         72.0,
+        "footfall":       78.0,
+        "competition":    60.0,
+        "accessibility":  80.0,
+        "catchment":      74.0,
+        "spending_power": 58.0,
+    },
+    "automotive": {
+        "demand":         65.0,
+        "footfall":       68.0,
+        "competition":    55.0,
+        "accessibility":  85.0,
+        "catchment":      62.0,
+        "spending_power": 55.0,
+    },
 }
 
 WEIGHTS = {

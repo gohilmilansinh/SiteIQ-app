@@ -69,7 +69,8 @@ def score_batch(
             "restaurant", "pharmacy",
             "supermarket", "bank", "school",
             "clothing", "beauty",
-            "healthcare", "fitness", "education"
+            "healthcare", "fitness", "education",
+            "hardware", "cinema", "automotive"
         ]
         if brand_type not in valid_types:
             brand_type = "restaurant"

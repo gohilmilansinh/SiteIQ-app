@@ -138,7 +138,8 @@ elif mode == "Single Site":
     brand_type = st.selectbox(
         "Select brand type",
         ["restaurant", "pharmacy", "supermarket", "bank", "school",
-         "clothing", "beauty", "healthcare", "fitness", "education"],
+         "clothing", "beauty", "healthcare", "fitness", "education",
+         "hardware", "cinema", "automotive"],
         key="single_type_v2",
     )
 
@@ -418,7 +419,8 @@ elif mode == "Compare N Sites":
     brand_type_c = st.selectbox(
         "Brand type",
         ["restaurant", "pharmacy", "supermarket", "bank", "school",
-         "clothing", "beauty", "healthcare", "fitness", "education"],
+         "clothing", "beauty", "healthcare", "fitness", "education",
+         "hardware", "cinema", "automotive"],
         key="compare_type",
     )
 
