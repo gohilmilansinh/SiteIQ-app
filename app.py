@@ -27,14 +27,12 @@ def _handle_recovery_token():
         if (hash && hash.includes('type=recovery')) {
             const params = new URLSearchParams(hash.substring(1));
             const access_token = params.get('access_token');
-            const refresh_token = params.get('refresh_token');
+            const refresh_token = params.get('refresh_token') || '';
             if (access_token) {
                 const url = new URL(window.parent.location.href);
                 url.hash = '';
                 url.searchParams.set('recovery_token', access_token);
-                if (refresh_token) {
-                    url.searchParams.set('refresh_token', refresh_token);
-                }
+                url.searchParams.set('refresh_token', refresh_token);
                 window.parent.location.replace(url.toString());
             }
         }
@@ -173,17 +171,16 @@ st.set_page_config(
 from auth import render_auth_page, is_logged_in, logout, get_current_user
 
 # ── Handle password recovery token from email link ────────
-_handle_recovery_token()
-
 if "recovery_token" in st.query_params:
-    st.session_state.auth_mode = "reset"
+    st.session_state.auth_mode      = "reset"
     st.session_state.recovery_token = st.query_params["recovery_token"]
     st.session_state.refresh_token  = st.query_params.get("refresh_token", "")
 
 if not is_logged_in():
-    if st.session_state.get("auth_mode") == "reset":
+    if st.session_state.get("auth_mode") == "reset" and st.session_state.get("recovery_token"):
         _render_reset_password_page()
     else:
+        _handle_recovery_token()
         render_auth_page()
     st.stop()
 
