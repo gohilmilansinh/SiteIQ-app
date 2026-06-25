@@ -1432,14 +1432,112 @@ elif mode == "Batch Upload":
         col_csv, col_pdf = st.columns(2)
 
         with col_csv:
-            export_df  = results_to_dataframe(results)
+            export_df = results_to_dataframe(results)
+
+            # ── CSV export ────────────────────────────────
             csv_buffer = io.StringIO()
             export_df.to_csv(csv_buffer, index=False)
             st.download_button(
-                label="Export Results to CSV",
+                label="Export to CSV",
                 data=csv_buffer.getvalue(),
                 file_name="siteiq_batch_results.csv",
                 mime="text/csv",
+                use_container_width=True,
+            )
+
+            # ── Excel export ──────────────────────────────
+            import io as _io
+            excel_buffer = _io.BytesIO()
+            with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
+                # Main results sheet
+                export_df.to_excel(
+                    writer, index=False, sheet_name="Site Scores"
+                )
+
+                # Summary sheet
+                summary_data = {
+                    "Metric": [
+                        "Total Sites Scored",
+                        "Average Score",
+                        "Strong Sites (65+)",
+                        "Moderate Sites (45-64)",
+                        "Weak Sites (<45)",
+                        "Best Site",
+                        "Best Score",
+                    ],
+                    "Value": [
+                        len(scored),
+                        round(sum(r["total_score"] for r in scored) / len(scored), 1) if scored else 0,
+                        sum(1 for r in scored if r["verdict"] == "Strong"),
+                        sum(1 for r in scored if r["verdict"] == "Moderate"),
+                        sum(1 for r in scored if r["verdict"] == "Weak"),
+                        scored[0]["address"] if scored else "",
+                        scored[0]["total_score"] if scored else 0,
+                    ]
+                }
+                pd.DataFrame(summary_data).to_excel(
+                    writer, index=False, sheet_name="Summary"
+                )
+
+                # Format the main sheet
+                workbook  = writer.book
+                worksheet = writer.sheets["Site Scores"]
+
+                # Header style
+                from openpyxl.styles import PatternFill, Font, Alignment
+                header_fill = PatternFill(
+                    start_color="0A2E26",
+                    end_color="0A2E26",
+                    fill_type="solid"
+                )
+                header_font = Font(
+                    color="9ECFC0", bold=True, size=10
+                )
+                for cell in worksheet[1]:
+                    cell.fill      = header_fill
+                    cell.font      = header_font
+                    cell.alignment = Alignment(horizontal="center")
+
+                # Color score cells
+                green_fill  = PatternFill(start_color="D6F5E9", end_color="D6F5E9", fill_type="solid")
+                amber_fill  = PatternFill(start_color="FFF3CD", end_color="FFF3CD", fill_type="solid")
+                red_fill    = PatternFill(start_color="FADBD8", end_color="FADBD8", fill_type="solid")
+
+                score_col_idx = None
+                for idx, cell in enumerate(worksheet[1], 1):
+                    if cell.value == "Total Score":
+                        score_col_idx = idx
+                        break
+
+                if score_col_idx:
+                    for row in worksheet.iter_rows(
+                        min_row=2, max_row=worksheet.max_row,
+                        min_col=score_col_idx, max_col=score_col_idx
+                    ):
+                        for cell in row:
+                            if isinstance(cell.value, (int, float)):
+                                if cell.value >= 65:
+                                    cell.fill = green_fill
+                                elif cell.value >= 45:
+                                    cell.fill = amber_fill
+                                else:
+                                    cell.fill = red_fill
+
+                # Auto column width
+                for col in worksheet.columns:
+                    max_len = max(
+                        len(str(cell.value)) if cell.value else 0
+                        for cell in col
+                    )
+                    worksheet.column_dimensions[
+                        col[0].column_letter
+                    ].width = min(max_len + 4, 40)
+
+            st.download_button(
+                label="Export to Excel (.xlsx)",
+                data=excel_buffer.getvalue(),
+                file_name="siteiq_batch_results.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 use_container_width=True,
             )
 
