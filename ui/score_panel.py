@@ -271,9 +271,12 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
 
     explainer_html = f"""
     <!DOCTYPE html><html><head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
       body{{margin:0;background:transparent;font-family:sans-serif}}
-      table{{width:100%;border-collapse:collapse;font-size:13px}}
+      .wrap{{overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch}}
+      html,body{{height:100%;margin:0;padding:0}}
+      table{{width:100%;min-width:600px;border-collapse:collapse;font-size:13px}}
       thead tr{{background:#0A2E26}}
       th{{padding:10px 12px;color:#9ecfc0;font-size:10px;
           letter-spacing:.5px;text-align:center;font-weight:600}}
@@ -281,6 +284,7 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
       tbody tr{{border-bottom:1px solid #1a1a1a}}
       tbody tr:hover{{background:#0d1f1a}}
     </style></head><body>
+    <div class="wrap" style="height:100%;width:100%">
     <table>
       <thead><tr>
         <th style='text-align:left'>VARIABLE</th>
@@ -295,11 +299,12 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
       </tr></thead>
       <tbody>{rows_html}</tbody>
     </table>
+    </div>
     </body></html>"""
 
     components.html(
         explainer_html,
-        height=60 + len(contribs) * 58
+        height=20 + len(contribs) * 50
     )
 
     # Risk + boost highlights
