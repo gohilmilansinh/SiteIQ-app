@@ -14,6 +14,7 @@ from roi_calculator import calculate_roi
 from score_explainer import explain_scores
 from brand_registry import detect_known_brands
 from persistence import get_address_history
+from rent_benchmarks import get_rent_benchmark
 
 def render_address_trend(address: str) -> None:
     """Renders score trend chart + table for a specific address."""
@@ -681,6 +682,48 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
         unsafe_allow_html=True,
     )
 
+    # ── Rent benchmark reference ──────────────────────────
+    bench = get_rent_benchmark(
+        result["address"], brand_type, scores
+    )
+
+    def fmt_inr_short(n):
+        if n >= 100000:
+            return f"Rs.{n/100000:.1f}L"
+        return f"Rs.{n/1000:.0f}K"
+
+    st.markdown(
+        f"<div style='background:#0d1f1a;border:1px solid #1a3a2a;"
+        f"border-radius:8px;padding:12px 16px;margin-bottom:14px'>"
+        f"<div style='font-size:10px;color:#9ecfc0;letter-spacing:1px;"
+        f"margin-bottom:6px'>📍 MARKET RENT BENCHMARK — "
+        f"{bench['area_type'].replace('_',' ').upper()} · "
+        f"{bench['city'].title()}</div>"
+        f"<div style='display:flex;gap:24px;align-items:center'>"
+        f"<div style='text-align:center'>"
+        f"<div style='font-size:11px;color:#666'>Min</div>"
+        f"<div style='font-size:16px;font-weight:700;color:#888'>"
+        f"{fmt_inr_short(bench['rent_min'])}</div>"
+        f"</div>"
+        f"<div style='text-align:center'>"
+        f"<div style='font-size:11px;color:#9ecfc0'>Typical</div>"
+        f"<div style='font-size:22px;font-weight:700;color:#1D9E75'>"
+        f"{fmt_inr_short(bench['rent_typical'])}</div>"
+        f"</div>"
+        f"<div style='text-align:center'>"
+        f"<div style='font-size:11px;color:#666'>Max</div>"
+        f"<div style='font-size:16px;font-weight:700;color:#888'>"
+        f"{fmt_inr_short(bench['rent_max'])}</div>"
+        f"</div>"
+        f"<div style='flex:1;font-size:11px;color:#555;"
+        f"border-left:1px solid #1a3a2a;padding-left:16px'>"
+        f"Based on {bench['area_type'].replace('_',' ')} area signals "
+        f"from your site score. Use as reference when negotiating rent."
+        f"</div>"
+        f"</div></div>",
+        unsafe_allow_html=True,
+    )
+
     col_rent, col_setup = st.columns(2)
     with col_rent:
         monthly_rent = st.number_input(
@@ -692,6 +735,7 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
             help="Enter the monthly rent quoted for this site",
             key=f"rent_{result['address'][:15]}",
         )
+    
     with col_setup:
         setup_cost = st.number_input(
             "Setup / Fit-out Cost (Rs.)",
