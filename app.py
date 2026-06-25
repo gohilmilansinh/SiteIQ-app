@@ -1801,7 +1801,7 @@ elif mode == "History":
                         )
 
                     # ── Trend for this address ─────────────
-                    from score_panel import render_address_trend
+                    from ui.score_panel import render_address_trend
                     render_address_trend(entry["address"])
 
         st.markdown("---")
