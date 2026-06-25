@@ -46,12 +46,43 @@ def logout():
     st.session_state.batch_results = None
 
 
+def render_forgot_password():
+    """Renders forgot password form."""
+    st.markdown("#### Reset Password")
+    st.markdown(
+        "<div style='font-size:12px;color:#888;margin-bottom:12px'>"
+        "Enter your email and we'll send you a reset link.</div>",
+        unsafe_allow_html=True,
+    )
+    email = st.text_input("Email", key="forgot_email",
+                          placeholder="you@example.com")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("Send Reset Link", type="primary",
+                     use_container_width=True):
+            if not email:
+                st.error("Please enter your email.")
+            else:
+                _do_forgot_password(email.strip())
+    with col2:
+        if st.button("Back to Login", use_container_width=True):
+            st.session_state.auth_mode = "login"
+            st.rerun()
+
+
 def render_auth_page():
     """
     Renders the full login/signup page.
     Returns True if user is now authenticated, False otherwise.
     """
     _init_session()
+
+    # ── Show forgot password page if requested ────────────
+    if st.session_state.auth_mode == "forgot":
+        _, col, _ = st.columns([1, 1.2, 1])
+        with col:
+            render_forgot_password()
+        return False
 
     # ── Page header ───────────────────────────────────────
     st.markdown(
@@ -96,6 +127,12 @@ def render_auth_page():
                 else:
                     _do_login(login_email.strip(), login_pass)
 
+            st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+            if st.button("Forgot Password?", use_container_width=True,
+                         key="btn_forgot"):
+                st.session_state.auth_mode = "forgot"
+                st.rerun()
+
         # ── SIGN UP TAB ───────────────────────────────────
         with t2:
             st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
@@ -136,6 +173,19 @@ def render_auth_page():
 
     return is_logged_in()
 
+def _do_forgot_password(email: str):
+    client = _get_supabase()
+    if not client:
+        st.error("Database not configured.")
+        return
+    try:
+        client.auth.reset_password_email(email)
+        st.success(
+            "Reset link sent! Check your email inbox "
+            "(and spam folder). Click the link to reset your password."
+        )
+    except Exception as e:
+        st.error(f"Error sending reset email: {e}")
 
 def _do_login(email: str, password: str):
     client = _get_supabase()

@@ -14,6 +14,28 @@ import tempfile
 import pandas as pd
 import uuid
 
+def _change_password(new_password: str):
+    try:
+        import os
+        try:
+            url = st.secrets.get("SUPABASE_URL", "") or os.environ.get("SUPABASE_URL", "")
+            key = st.secrets.get("SUPABASE_KEY", "") or os.environ.get("SUPABASE_KEY", "")
+        except Exception:
+            url = os.environ.get("SUPABASE_URL", "")
+            key = os.environ.get("SUPABASE_KEY", "")
+        from supabase import create_client
+        client = create_client(url, key)
+        token = st.session_state.get("auth_token", "")
+        if token:
+            client.auth.set_session(
+                token,
+                st.session_state.get("auth_user", {}).get("id", "")
+            )
+        client.auth.update_user({"password": new_password})
+        st.success("Password updated successfully!")
+    except Exception as e:
+        st.error(f"Failed to update password: {e}")
+
 def _inject_session_id():
     session_js = """
     <script>
@@ -65,6 +87,29 @@ with st.sidebar:
         f"</div>",
         unsafe_allow_html=True,
     )
+
+    # ── Change password ───────────────────────────────────
+    with st.expander("Change Password"):
+        new_pass = st.text_input(
+            "New Password", type="password",
+            key="new_pass", placeholder="Min 6 characters"
+        )
+        confirm_pass = st.text_input(
+            "Confirm Password", type="password",
+            key="confirm_pass", placeholder="Repeat new password"
+        )
+        if st.button("Update Password", use_container_width=True,
+                     key="btn_update_pass"):
+            if not new_pass or not confirm_pass:
+                st.error("Please fill both fields.")
+            elif len(new_pass) < 6:
+                st.error("Password must be at least 6 characters.")
+            elif new_pass != confirm_pass:
+                st.error("Passwords do not match.")
+            else:
+                _change_password(new_pass)
+
+    st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
     if st.button("Logout", use_container_width=True):
         logout()
         st.rerun()
