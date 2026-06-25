@@ -14,6 +14,34 @@ import tempfile
 import pandas as pd
 import uuid
 
+def _handle_recovery_token():
+    """
+    Detects Supabase password recovery token in URL fragment
+    and converts it to query params Streamlit can read.
+    """
+    import streamlit.components.v1 as components
+    components.html("""
+    <script>
+    (function() {
+        const hash = window.parent.location.hash;
+        if (hash && hash.includes('type=recovery')) {
+            const params = new URLSearchParams(hash.substring(1));
+            const access_token = params.get('access_token');
+            const refresh_token = params.get('refresh_token');
+            if (access_token) {
+                const url = new URL(window.parent.location.href);
+                url.hash = '';
+                url.searchParams.set('recovery_token', access_token);
+                if (refresh_token) {
+                    url.searchParams.set('refresh_token', refresh_token);
+                }
+                window.parent.location.replace(url.toString());
+            }
+        }
+    })();
+    </script>
+    """, height=0)
+
 def _change_password(new_password: str):
     try:
         import os
@@ -35,6 +63,80 @@ def _change_password(new_password: str):
         st.success("Password updated successfully!")
     except Exception as e:
         st.error(f"Failed to update password: {e}")
+
+def _do_reset_password(new_password: str):
+    try:
+        import os
+        try:
+            url = st.secrets.get("SUPABASE_URL", "") or os.environ.get("SUPABASE_URL", "")
+            key = st.secrets.get("SUPABASE_KEY", "") or os.environ.get("SUPABASE_KEY", "")
+        except Exception:
+            url = os.environ.get("SUPABASE_URL", "")
+            key = os.environ.get("SUPABASE_KEY", "")
+
+        from supabase import create_client
+        client = create_client(url, key)
+
+        # Set session using recovery token
+        access_token  = st.session_state.get("recovery_token", "")
+        refresh_token = st.session_state.get("refresh_token", "")
+
+        if not access_token:
+            st.error("Invalid or expired reset link. Please request a new one.")
+            return
+
+        client.auth.set_session(access_token, refresh_token)
+        client.auth.update_user({"password": new_password})
+
+        # Clear recovery state and query params
+        st.session_state.auth_mode      = "login"
+        st.session_state.recovery_token = None
+        st.session_state.refresh_token  = None
+
+        # Clear query params
+        st.query_params.clear()
+
+        st.success("Password updated! Please log in with your new password.")
+        import time
+        time.sleep(2)
+        st.rerun()
+
+    except Exception as e:
+        st.error(f"Failed to reset password: {e}")
+
+def _render_reset_password_page():
+    """Page shown when user clicks forgot password email link."""
+    st.markdown(
+        """
+        <div style='text-align:center;padding:40px 0 10px 0'>
+          <div style='font-size:40px;font-weight:800;color:#1D9E75'>SiteIQ</div>
+          <div style='font-size:14px;color:#888;margin-top:8px'>
+            Set your new password
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    _, col, _ = st.columns([1, 1.2, 1])
+    with col:
+        new_pass = st.text_input(
+            "New Password", type="password",
+            key="reset_new_pass", placeholder="Min 6 characters"
+        )
+        confirm_pass = st.text_input(
+            "Confirm Password", type="password",
+            key="reset_confirm_pass", placeholder="Repeat new password"
+        )
+        if st.button("Set New Password", type="primary",
+                     use_container_width=True):
+            if not new_pass or not confirm_pass:
+                st.error("Please fill both fields.")
+            elif len(new_pass) < 6:
+                st.error("Password must be at least 6 characters.")
+            elif new_pass != confirm_pass:
+                st.error("Passwords do not match.")
+            else:
+                _do_reset_password(new_pass)
 
 def _inject_session_id():
     session_js = """
@@ -70,8 +172,19 @@ st.set_page_config(
 # ── Auth gate ─────────────────────────────────────────────
 from auth import render_auth_page, is_logged_in, logout, get_current_user
 
+# ── Handle password recovery token from email link ────────
+_handle_recovery_token()
+
+if "recovery_token" in st.query_params:
+    st.session_state.auth_mode = "reset"
+    st.session_state.recovery_token = st.query_params["recovery_token"]
+    st.session_state.refresh_token  = st.query_params.get("refresh_token", "")
+
 if not is_logged_in():
-    render_auth_page()
+    if st.session_state.get("auth_mode") == "reset":
+        _render_reset_password_page()
+    else:
+        render_auth_page()
     st.stop()
 
 # ── Logged in — show user + logout in sidebar ─────────────
