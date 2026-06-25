@@ -13,7 +13,165 @@ import os
 from roi_calculator import calculate_roi
 from score_explainer import explain_scores
 from brand_registry import detect_known_brands
+from persistence import get_address_history
 
+def render_address_trend(address: str) -> None:
+    """Renders score trend chart + table for a specific address."""
+    history = get_address_history(address)
+
+    if len(history) < 2:
+        return  # Need at least 2 data points for a trend
+
+    st.markdown("### Score Trend for This Location")
+    st.markdown(
+        f"<div style='font-size:12px;color:#888;margin-bottom:12px'>"
+        f"This site has been scored {len(history)} times. "
+        f"Showing how scores have changed over time.</div>",
+        unsafe_allow_html=True,
+    )
+
+    timestamps  = [h.get("timestamp", "") for h in history]
+    totals      = [h.get("total_score", 0) for h in history]
+    short_times = [t[:12] if t else "" for t in timestamps]
+
+    # ── Delta badge ───────────────────────────────────────
+    first_score = totals[0]
+    last_score  = totals[-1]
+    delta       = round(last_score - first_score, 1)
+    delta_col   = "#1D9E75" if delta >= 0 else "#C0392B"
+    delta_str   = f"+{delta}" if delta >= 0 else str(delta)
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric("First Score",  first_score)
+    col2.metric("Latest Score", last_score, delta=delta_str)
+    col3.metric("Times Scored", len(history))
+
+    # ── Line chart ────────────────────────────────────────
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=list(range(len(history))),
+        y=totals,
+        mode="lines+markers",
+        line=dict(color="#1D9E75", width=2),
+        marker=dict(
+            color=[
+                "#1D9E75" if s >= 65
+                else "#BA7517" if s >= 45
+                else "#C0392B"
+                for s in totals
+            ],
+            size=12,
+            line=dict(color="#0A2E26", width=2),
+        ),
+        text=short_times,
+        hovertemplate=(
+            "<b>%{text}</b><br>"
+            "Score: %{y}<extra></extra>"
+        ),
+    ))
+    fig.add_hline(
+        y=65, line_dash="dash", line_color="#1D9E75",
+        opacity=0.4, annotation_text="Strong",
+        annotation_font_color="#1D9E75",
+        annotation_font_size=10,
+    )
+    fig.add_hline(
+        y=45, line_dash="dash", line_color="#BA7517",
+        opacity=0.4, annotation_text="Moderate",
+        annotation_font_color="#BA7517",
+        annotation_font_size=10,
+    )
+    fig.update_layout(
+        height=260,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        xaxis=dict(
+            tickvals=list(range(len(history))),
+            ticktext=short_times,
+            tickangle=-30,
+            tickfont=dict(size=9),
+        ),
+        yaxis=dict(range=[0, 105], title="Score"),
+        margin=dict(l=10, r=10, t=20, b=60),
+        showlegend=False,
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    # ── History table ─────────────────────────────────────
+    st.markdown("**All Scores for This Address**")
+    rows_html = ""
+    for idx, h in enumerate(reversed(history)):
+        sc      = h.get("total_score", 0)
+        verdict = h.get("verdict", "")
+        col     = (
+            "#1D9E75" if sc >= 65
+            else "#BA7517" if sc >= 45
+            else "#C0392B"
+        )
+        scores  = h.get("scores", {})
+        is_latest = idx == 0
+
+        rows_html += (
+            f"<tr style='background:{'#0d1f1a' if is_latest else 'transparent'}'>"
+            f"<td style='padding:8px 12px;color:#9ecfc0;font-size:11px'>"
+            f"{'⭐ Latest' if is_latest else f'#{len(history)-idx}'}</td>"
+            f"<td style='padding:8px 12px;color:#888;font-size:11px'>"
+            f"{h.get('timestamp','')}</td>"
+            f"<td style='padding:8px 12px;text-align:center;"
+            f"color:{col};font-weight:700;font-size:15px'>{sc}</td>"
+            f"<td style='padding:8px 12px;text-align:center;"
+            f"color:{col};font-size:11px'>{verdict}</td>"
+            f"<td style='padding:8px 12px;text-align:center;"
+            f"color:#9ecfc0;font-size:11px'>"
+            f"{scores.get('demand','-')}</td>"
+            f"<td style='padding:8px 12px;text-align:center;"
+            f"color:#9ecfc0;font-size:11px'>"
+            f"{scores.get('footfall','-')}</td>"
+            f"<td style='padding:8px 12px;text-align:center;"
+            f"color:#9ecfc0;font-size:11px'>"
+            f"{scores.get('competition','-')}</td>"
+            f"<td style='padding:8px 12px;text-align:center;"
+            f"color:#9ecfc0;font-size:11px'>"
+            f"{scores.get('accessibility','-')}</td>"
+            f"<td style='padding:8px 12px;text-align:center;"
+            f"color:#9ecfc0;font-size:11px'>"
+            f"{scores.get('catchment','-')}</td>"
+            f"<td style='padding:8px 12px;text-align:center;"
+            f"color:#9ecfc0;font-size:11px'>"
+            f"{scores.get('spending_power','-')}</td>"
+            f"</tr>"
+        )
+
+    table_html = f"""<!DOCTYPE html><html><head>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+      body{{margin:0;background:transparent;font-family:sans-serif}}
+      .wrap{{overflow-x:auto;-webkit-overflow-scrolling:touch;
+             border-radius:8px;border:1px solid #1a1a1a}}
+      table{{width:100%;min-width:700px;border-collapse:collapse;
+             font-size:12px}}
+      thead tr{{background:#0A2E26}}
+      th{{padding:10px 12px;color:#9ecfc0;font-size:10px;
+          letter-spacing:.5px;text-align:center;font-weight:600;
+          white-space:nowrap}}
+      th:nth-child(2){{text-align:left}}
+      tbody tr{{border-bottom:1px solid #1a1a1a}}
+    </style></head><body>
+    <div class="wrap"><table>
+      <thead><tr>
+        <th>#</th><th style='text-align:left'>DATE</th>
+        <th>TOTAL</th><th>VERDICT</th>
+        <th>DEMAND</th><th>FOOTFALL</th><th>COMP</th>
+        <th>ACCESS</th><th>CATCH</th><th>SPEND</th>
+      </tr></thead>
+      <tbody style='color:white'>{rows_html}</tbody>
+    </table></div></body></html>"""
+
+    import streamlit.components.v1 as components
+    components.html(
+        table_html,
+        height=60 + len(history) * 50
+    )
 
 def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
     scores = result.get("scores", {})
@@ -685,6 +843,9 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
             "Enter monthly rent above to see ROI analysis, "
             "profit estimates, and payback period."
         )
+
+    # ── Address trend ─────────────────────────────────────
+    render_address_trend(result["address"])
 
     # PDF
     st.markdown("---")

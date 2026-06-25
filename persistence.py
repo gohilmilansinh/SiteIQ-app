@@ -146,3 +146,16 @@ def _clear_local_history() -> None:
             os.remove(path)
     except Exception as e:
         logger.warning("Local history clear failed: %s", e)
+
+def get_address_history(address: str) -> List[Dict[str, Any]]:
+    """Get all scored history entries for a specific address."""
+    history = load_history()
+    # Normalize address for matching
+    addr_lower = address.strip().lower()
+    matches = [
+        h for h in history
+        if h.get("address", "").strip().lower() == addr_lower
+    ]
+    # Sort oldest first for trend chart
+    matches.sort(key=lambda x: x.get("timestamp", ""))
+    return matches
