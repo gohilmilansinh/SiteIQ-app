@@ -1800,10 +1800,6 @@ elif mode == "History":
                             f"{entry['address']}"
                         )
 
-                    # ── Trend for this address ─────────────
-                    from ui.score_panel import render_address_trend
-                    render_address_trend(entry["address"])
-
         st.markdown("---")
         if st.button("Clear All History", type="secondary"):
             clear_history()
