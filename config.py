@@ -3,20 +3,98 @@ from __future__ import annotations
 from typing import Dict, List
 
 SUPPORTED_CITIES: List[str] = [
-    "ahmedabad",
-    "surat",
-    "vadodara",
-    "baroda",
-    "rajkot",
-    "gandhinagar",
-    "anand",
-    "mehsana",
-    "bharuch",
-    "bhavnagar",
-    "jamnagar",
-    "junagadh",
-    "gujarat",
-    "gj",
+    # Major cities
+    "ahmedabad", "surat", "vadodara", "baroda", "rajkot",
+    # Districts & towns — all 33 districts
+    "gandhinagar", "anand", "mehsana", "bharuch", "bhavnagar",
+    "jamnagar", "junagadh", "gujarat", "gj",
+    # Banaskantha
+    "palanpur", "deesa", "tharad", "dhanera", "vadgam",
+    "danta", "vav", "deodar", "suigam", "dantiwada",
+    "bhabhar", "amirgarh", "lakhani", "kankrej",
+    # Patan
+    "patan", "sidhpur", "chanasma", "radhanpur", "harij",
+    "sami", "santalpur", "shankheshwar",
+    # Sabarkantha
+    "himmatnagar", "idar", "prantij", "talod", "khedbrahma",
+    "poshina", "vadali", "vijayanagar",
+    # Aravalli
+    "modasa", "bhiloda", "meghraj", "malpur", "dhansura", "bayad",
+    # Mahisagar
+    "lunawada", "khanpur", "virpur", "kadana",
+    # Kheda
+    "nadiad", "kheda", "mahemdabad", "mahudha", "thasra",
+    "kathlal", "kapadvanj", "vaso", "matar",
+    # Panchmahal
+    "godhra", "halol", "kalol", "shehera", "jambughoda",
+    "santrampur", "ghoghamba", "morwa",
+    # Dahod
+    "dahod", "limkheda", "devgadh baria", "fatepura",
+    "jhalod", "garbada", "dhanpur", "zalod",
+    # Vadodara rural
+    "padra", "karjan", "sinor", "dabhoi", "savli", "waghodia",
+    # Chhota Udaipur
+    "chhota udaipur", "kavant", "naswadi", "bodeli",
+    "jetpur pavi", "sankheda",
+    # Narmada
+    "rajpipla", "nandod", "sagbara", "tilakwada",
+    "dediapada", "garudeshwar",
+    # Bharuch
+    "ankleshwar", "jhagadia", "hansot", "vagra",
+    "amod", "jambusar", "walia", "valia",
+    # Surat rural
+    "bardoli", "olpad", "mandvi", "mangrol", "palsana",
+    "kamrej", "mahuva", "umarpada", "choryasi",
+    "sachin", "hazira", "kim", "pandesara",
+    # Navsari
+    "navsari", "gandevi", "chikhli", "vansda",
+    "khergam", "jalalpore",
+    # Valsad
+    "valsad", "vapi", "umbergaon", "pardi",
+    "dharampur", "kaprada",
+    # Tapi
+    "vyara", "songadh", "uchchhal", "nizar", "valod", "dolvan",
+    # Dangs
+    "ahwa", "subir", "waghai", "saputara",
+    # Surendranagar
+    "surendranagar", "wadhwan", "dhrangadhra", "limbdi",
+    "chotila", "halvad", "lakhtar", "chuda", "dasada",
+    "muli", "patdi", "sayla", "thangadh",
+    # Bhavnagar
+    "sihor", "palitana", "mahuva", "talaja", "gariadhar",
+    "ghogha", "vallabhipur", "jesar", "umrala",
+    # Botad
+    "botad", "gadhada", "barwala", "ranpur",
+    # Amreli
+    "amreli", "rajula", "savarkundla", "lathi", "bagasara",
+    "dhari", "jafrabad", "kunkavav", "khambha", "liliya",
+    # Gir Somnath
+    "veraval", "somnath", "una", "talala", "kodinar",
+    "sutrapada",
+    # Junagadh
+    "keshod", "visavadar", "vanthali", "mendarda", "bhesan",
+    # Porbandar
+    "porbandar", "kutiyana", "ranavav",
+    # Jamnagar
+    "kalavad", "dhrol", "jodia", "lalpur", "jamjodhpur",
+    # Devbhoomi Dwarka
+    "dwarka", "khambhalia", "kalyanpur", "bhanvad",
+    # Morbi
+    "morbi", "tankara", "wankaner", "maliya",
+    # Rajkot rural
+    "gondal", "jetpur", "dhoraji", "upleta", "jasdan",
+    "paddhari", "lodhika", "vinchhiya", "jamkandorna",
+    # Kutch
+    "bhuj", "gandhidham", "anjar", "mundra", "nakhatrana",
+    "rapar", "lakhpat", "abdasa", "bhachau",
+    # Mehsana
+    "visnagar", "unjha", "vijapur", "kadi", "vadnagar",
+    "becharaji", "kheralu", "satlasana",
+    # Gandhinagar
+    "mansa", "dehgam",
+    # Anand
+    "vallabh vidyanagar", "petlad", "borsad", "anklav",
+    "umreth", "sojitra", "tarapur",
 ]
 
 WEIGHTS: Dict[str, float] = {

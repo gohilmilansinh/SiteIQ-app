@@ -54,11 +54,12 @@ def estimate_population(
             if weight > 0.1:
                 contributing_wards.append(
                     {
-                        "name": ward["name"],
-                        "city": ward["city"],
-                        "distance": round(dist, 2),
+                        "name":       ward["name"],
+                        "city":       ward["city"],
+                        "district":   ward.get("district", ""),
+                        "distance":   round(dist, 2),
                         "population": ward["population"],
-                        "weight": round(weight, 2),
+                        "weight":     round(weight, 2),
                     }
                 )
 

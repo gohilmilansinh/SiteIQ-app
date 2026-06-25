@@ -1,56 +1,2999 @@
 [
-  {"name": "Maninagar", "city": "Ahmedabad", "lat": 22.9990, "lng": 72.6050, "population": 185000, "households": 38000},
-  {"name": "Naroda", "city": "Ahmedabad", "lat": 23.0700, "lng": 72.6490, "population": 220000, "households": 44000},
-  {"name": "Nikol", "city": "Ahmedabad", "lat": 23.0560, "lng": 72.6350, "population": 195000, "households": 39000},
-  {"name": "Vatva", "city": "Ahmedabad", "lat": 22.9620, "lng": 72.6290, "population": 168000, "households": 33000},
-  {"name": "Odhav", "city": "Ahmedabad", "lat": 22.9980, "lng": 72.6540, "population": 142000, "households": 28000},
-  {"name": "Bopal", "city": "Ahmedabad", "lat": 23.0340, "lng": 72.4690, "population": 95000, "households": 19000},
-  {"name": "Prahlad Nagar", "city": "Ahmedabad", "lat": 23.0080, "lng": 72.5050, "population": 72000, "households": 14000},
-  {"name": "Vastrapur", "city": "Ahmedabad", "lat": 23.0376, "lng": 72.5313, "population": 68000, "households": 13500},
-  {"name": "Satellite", "city": "Ahmedabad", "lat": 23.0258, "lng": 72.5292, "population": 85000, "households": 17000},
-  {"name": "Navrangpura", "city": "Ahmedabad", "lat": 23.0395, "lng": 72.5599, "population": 78000, "households": 15600},
-  {"name": "Thaltej", "city": "Ahmedabad", "lat": 23.0550, "lng": 72.4980, "population": 62000, "households": 12400},
-  {"name": "Chandkheda", "city": "Ahmedabad", "lat": 23.1060, "lng": 72.5870, "population": 148000, "households": 29600},
-  {"name": "Gota", "city": "Ahmedabad", "lat": 23.0980, "lng": 72.5340, "population": 132000, "households": 26400},
-  {"name": "Vastral", "city": "Ahmedabad", "lat": 22.9990, "lng": 72.6660, "population": 178000, "households": 35600},
-  {"name": "Isanpur", "city": "Ahmedabad", "lat": 22.9700, "lng": 72.6380, "population": 156000, "households": 31200},
-  {"name": "Bapunagar", "city": "Ahmedabad", "lat": 23.0420, "lng": 72.6120, "population": 192000, "households": 38400},
-  {"name": "Meghaninagar", "city": "Ahmedabad", "lat": 23.0490, "lng": 72.6220, "population": 145000, "households": 29000},
-  {"name": "Rakhial", "city": "Ahmedabad", "lat": 23.0580, "lng": 72.6300, "population": 138000, "households": 27600},
-  {"name": "Shahibaug", "city": "Ahmedabad", "lat": 23.0710, "lng": 72.5850, "population": 92000, "households": 18400},
-  {"name": "Paldi", "city": "Ahmedabad", "lat": 23.0120, "lng": 72.5760, "population": 88000, "households": 17600},
-  {"name": "Vejalpur", "city": "Ahmedabad", "lat": 22.9970, "lng": 72.5390, "population": 112000, "households": 22400},
-  {"name": "Juhapura", "city": "Ahmedabad", "lat": 23.0000, "lng": 72.5260, "population": 165000, "households": 33000},
-  {"name": "Naranpura", "city": "Ahmedabad", "lat": 23.0580, "lng": 72.5540, "population": 95000, "households": 19000},
-  {"name": "Sabarmati", "city": "Ahmedabad", "lat": 23.0900, "lng": 72.5730, "population": 125000, "households": 25000},
-  {"name": "Ranip", "city": "Ahmedabad", "lat": 23.0850, "lng": 72.5620, "population": 118000, "households": 23600},
-  {"name": "Memnagar", "city": "Ahmedabad", "lat": 23.0630, "lng": 72.5450, "population": 76000, "households": 15200},
-  {"name": "Ambawadi", "city": "Ahmedabad", "lat": 23.0270, "lng": 72.5530, "population": 82000, "households": 16400},
-  {"name": "Ellis Bridge", "city": "Ahmedabad", "lat": 23.0280, "lng": 72.5710, "population": 58000, "households": 11600},
-  {"name": "SG Highway", "city": "Ahmedabad", "lat": 23.0420, "lng": 72.5070, "population": 45000, "households": 9000},
-  {"name": "Shilaj", "city": "Ahmedabad", "lat": 23.0160, "lng": 72.4780, "population": 38000, "households": 7600},
-  {"name": "Adajan", "city": "Surat", "lat": 21.2060, "lng": 72.7990, "population": 198000, "households": 39600},
-  {"name": "Varachha", "city": "Surat", "lat": 21.2140, "lng": 72.8680, "population": 285000, "households": 57000},
-  {"name": "Katargam", "city": "Surat", "lat": 21.2310, "lng": 72.8430, "population": 242000, "households": 48400},
-  {"name": "Vesu", "city": "Surat", "lat": 21.1590, "lng": 72.7920, "population": 88000, "households": 17600},
-  {"name": "Athwa", "city": "Surat", "lat": 21.1720, "lng": 72.8160, "population": 125000, "households": 25000},
-  {"name": "Althan", "city": "Surat", "lat": 21.1650, "lng": 72.8020, "population": 95000, "households": 19000},
-  {"name": "Udhna", "city": "Surat", "lat": 21.1940, "lng": 72.8580, "population": 215000, "households": 43000},
-  {"name": "Limbayat", "city": "Surat", "lat": 21.1830, "lng": 72.8720, "population": 198000, "households": 39600},
-  {"name": "Piplod", "city": "Surat", "lat": 21.1560, "lng": 72.7860, "population": 72000, "households": 14400},
-  {"name": "Dumas Road", "city": "Surat", "lat": 21.1340, "lng": 72.7720, "population": 45000, "households": 9000},
-  {"name": "Alkapuri", "city": "Vadodara", "lat": 22.3119, "lng": 73.1723, "population": 92000, "households": 18400},
-  {"name": "Akota", "city": "Vadodara", "lat": 22.3050, "lng": 73.1650, "population": 115000, "households": 23000},
-  {"name": "Manjalpur", "city": "Vadodara", "lat": 22.2740, "lng": 73.1860, "population": 145000, "households": 29000},
-  {"name": "Gotri", "city": "Vadodara", "lat": 22.3280, "lng": 73.1580, "population": 88000, "households": 17600},
-  {"name": "Waghodia Road", "city": "Vadodara", "lat": 22.2950, "lng": 73.2180, "population": 125000, "households": 25000},
-  {"name": "Fatehgunj", "city": "Vadodara", "lat": 22.3280, "lng": 73.1920, "population": 78000, "households": 15600},
-  {"name": "Harni", "city": "Vadodara", "lat": 22.3420, "lng": 73.2050, "population": 68000, "households": 13600},
-  {"name": "Nizampura", "city": "Vadodara", "lat": 22.3380, "lng": 73.1780, "population": 95000, "households": 19000},
-  {"name": "Kalawad Road", "city": "Rajkot", "lat": 22.3130, "lng": 70.7780, "population": 98000, "households": 19600},
-  {"name": "150 Feet Ring", "city": "Rajkot", "lat": 22.2920, "lng": 70.7850, "population": 112000, "households": 22400},
-  {"name": "Mavdi", "city": "Rajkot", "lat": 22.2780, "lng": 70.7720, "population": 88000, "households": 17600},
-  {"name": "University Road", "city": "Rajkot", "lat": 22.3050, "lng": 70.8020, "population": 75000, "households": 15000},
-  {"name": "Gondal Road", "city": "Rajkot", "lat": 22.2650, "lng": 70.7940, "population": 92000, "households": 18400},
-  {"name": "Bhaktinagar", "city": "Rajkot", "lat": 22.3180, "lng": 70.8120, "population": 68000, "households": 13600}
+  {
+    "name": "Ahmedabad City",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.0225,
+    "lng": 72.5714,
+    "population": 5570585,
+    "households": 1114117
+  },
+  {
+    "name": "Maninagar",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 22.999,
+    "lng": 72.605,
+    "population": 185000,
+    "households": 38000
+  },
+  {
+    "name": "Naroda",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.07,
+    "lng": 72.649,
+    "population": 220000,
+    "households": 44000
+  },
+  {
+    "name": "Nikol",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.056,
+    "lng": 72.635,
+    "population": 195000,
+    "households": 39000
+  },
+  {
+    "name": "Vatva",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 22.962,
+    "lng": 72.629,
+    "population": 168000,
+    "households": 33000
+  },
+  {
+    "name": "Odhav",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 22.998,
+    "lng": 72.654,
+    "population": 142000,
+    "households": 28000
+  },
+  {
+    "name": "Bopal",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.034,
+    "lng": 72.469,
+    "population": 95000,
+    "households": 19000
+  },
+  {
+    "name": "Prahlad Nagar",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.008,
+    "lng": 72.505,
+    "population": 72000,
+    "households": 14000
+  },
+  {
+    "name": "Vastrapur",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.0376,
+    "lng": 72.5313,
+    "population": 68000,
+    "households": 13500
+  },
+  {
+    "name": "Satellite",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.0258,
+    "lng": 72.5292,
+    "population": 85000,
+    "households": 17000
+  },
+  {
+    "name": "Navrangpura",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.0395,
+    "lng": 72.5599,
+    "population": 78000,
+    "households": 15600
+  },
+  {
+    "name": "Thaltej",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.055,
+    "lng": 72.498,
+    "population": 62000,
+    "households": 12400
+  },
+  {
+    "name": "Chandkheda",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.106,
+    "lng": 72.587,
+    "population": 148000,
+    "households": 29600
+  },
+  {
+    "name": "Gota",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.098,
+    "lng": 72.534,
+    "population": 132000,
+    "households": 26400
+  },
+  {
+    "name": "Vastral",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 22.999,
+    "lng": 72.666,
+    "population": 178000,
+    "households": 35600
+  },
+  {
+    "name": "Isanpur",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 22.97,
+    "lng": 72.638,
+    "population": 156000,
+    "households": 31200
+  },
+  {
+    "name": "Bapunagar",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.042,
+    "lng": 72.612,
+    "population": 192000,
+    "households": 38400
+  },
+  {
+    "name": "Meghaninagar",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.049,
+    "lng": 72.622,
+    "population": 145000,
+    "households": 29000
+  },
+  {
+    "name": "Rakhial",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.058,
+    "lng": 72.63,
+    "population": 138000,
+    "households": 27600
+  },
+  {
+    "name": "Shahibaug",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.071,
+    "lng": 72.585,
+    "population": 92000,
+    "households": 18400
+  },
+  {
+    "name": "Paldi",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.012,
+    "lng": 72.576,
+    "population": 88000,
+    "households": 17600
+  },
+  {
+    "name": "Vejalpur",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 22.997,
+    "lng": 72.539,
+    "population": 112000,
+    "households": 22400
+  },
+  {
+    "name": "Juhapura",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.0,
+    "lng": 72.526,
+    "population": 165000,
+    "households": 33000
+  },
+  {
+    "name": "Naranpura",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.058,
+    "lng": 72.554,
+    "population": 95000,
+    "households": 19000
+  },
+  {
+    "name": "Sabarmati",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.09,
+    "lng": 72.573,
+    "population": 125000,
+    "households": 25000
+  },
+  {
+    "name": "Ranip",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.085,
+    "lng": 72.562,
+    "population": 118000,
+    "households": 23600
+  },
+  {
+    "name": "Memnagar",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.063,
+    "lng": 72.545,
+    "population": 76000,
+    "households": 15200
+  },
+  {
+    "name": "Ambawadi",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.027,
+    "lng": 72.553,
+    "population": 82000,
+    "households": 16400
+  },
+  {
+    "name": "Ellis Bridge",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.028,
+    "lng": 72.571,
+    "population": 58000,
+    "households": 11600
+  },
+  {
+    "name": "SG Highway",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.042,
+    "lng": 72.507,
+    "population": 45000,
+    "households": 9000
+  },
+  {
+    "name": "Shilaj",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.016,
+    "lng": 72.478,
+    "population": 38000,
+    "households": 7600
+  },
+  {
+    "name": "Daskroi",
+    "city": "Daskroi",
+    "district": "Ahmedabad",
+    "lat": 22.92,
+    "lng": 72.6,
+    "population": 285000,
+    "households": 57000
+  },
+  {
+    "name": "Sanand",
+    "city": "Sanand",
+    "district": "Ahmedabad",
+    "lat": 22.9919,
+    "lng": 72.3833,
+    "population": 95000,
+    "households": 19000
+  },
+  {
+    "name": "Bavla",
+    "city": "Bavla",
+    "district": "Ahmedabad",
+    "lat": 22.8304,
+    "lng": 72.3648,
+    "population": 42000,
+    "households": 8400
+  },
+  {
+    "name": "Dholka",
+    "city": "Dholka",
+    "district": "Ahmedabad",
+    "lat": 22.7208,
+    "lng": 72.4667,
+    "population": 58000,
+    "households": 11600
+  },
+  {
+    "name": "Dhandhuka",
+    "city": "Dhandhuka",
+    "district": "Ahmedabad",
+    "lat": 22.3833,
+    "lng": 71.9833,
+    "population": 48000,
+    "households": 9600
+  },
+  {
+    "name": "Mandal",
+    "city": "Mandal",
+    "district": "Ahmedabad",
+    "lat": 23.2167,
+    "lng": 72.3167,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Detroj",
+    "city": "Detroj",
+    "district": "Ahmedabad",
+    "lat": 23.2833,
+    "lng": 72.3167,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Viramgam",
+    "city": "Viramgam",
+    "district": "Ahmedabad",
+    "lat": 23.1167,
+    "lng": 72.0333,
+    "population": 75000,
+    "households": 15000
+  },
+  {
+    "name": "Ranpur",
+    "city": "Ranpur",
+    "district": "Ahmedabad",
+    "lat": 22.5667,
+    "lng": 72.1667,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Gandhinagar",
+    "city": "Gandhinagar",
+    "district": "Gandhinagar",
+    "lat": 23.2156,
+    "lng": 72.6369,
+    "population": 292167,
+    "households": 58433
+  },
+  {
+    "name": "Mansa",
+    "city": "Mansa",
+    "district": "Gandhinagar",
+    "lat": 23.4333,
+    "lng": 72.6833,
+    "population": 52000,
+    "households": 10400
+  },
+  {
+    "name": "Dehgam",
+    "city": "Dehgam",
+    "district": "Gandhinagar",
+    "lat": 23.1667,
+    "lng": 72.8167,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Kalol",
+    "city": "Kalol",
+    "district": "Gandhinagar",
+    "lat": 23.25,
+    "lng": 72.5,
+    "population": 68000,
+    "households": 13600
+  },
+  {
+    "name": "Surat City",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.1702,
+    "lng": 72.8311,
+    "population": 4467797,
+    "households": 893559
+  },
+  {
+    "name": "Adajan",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.206,
+    "lng": 72.799,
+    "population": 198000,
+    "households": 39600
+  },
+  {
+    "name": "Varachha",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.214,
+    "lng": 72.868,
+    "population": 285000,
+    "households": 57000
+  },
+  {
+    "name": "Katargam",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.231,
+    "lng": 72.843,
+    "population": 242000,
+    "households": 48400
+  },
+  {
+    "name": "Vesu",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.159,
+    "lng": 72.792,
+    "population": 88000,
+    "households": 17600
+  },
+  {
+    "name": "Athwa",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.172,
+    "lng": 72.816,
+    "population": 125000,
+    "households": 25000
+  },
+  {
+    "name": "Althan",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.165,
+    "lng": 72.802,
+    "population": 95000,
+    "households": 19000
+  },
+  {
+    "name": "Udhna",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.194,
+    "lng": 72.858,
+    "population": 215000,
+    "households": 43000
+  },
+  {
+    "name": "Limbayat",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.183,
+    "lng": 72.872,
+    "population": 198000,
+    "households": 39600
+  },
+  {
+    "name": "Piplod",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.156,
+    "lng": 72.786,
+    "population": 72000,
+    "households": 14400
+  },
+  {
+    "name": "Dumas Road",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.134,
+    "lng": 72.772,
+    "population": 45000,
+    "households": 9000
+  },
+  {
+    "name": "Bardoli",
+    "city": "Bardoli",
+    "district": "Surat",
+    "lat": 21.1167,
+    "lng": 73.1167,
+    "population": 85000,
+    "households": 17000
+  },
+  {
+    "name": "Olpad",
+    "city": "Olpad",
+    "district": "Surat",
+    "lat": 21.3333,
+    "lng": 72.75,
+    "population": 38000,
+    "households": 7600
+  },
+  {
+    "name": "Mandvi Surat",
+    "city": "Mandvi",
+    "district": "Surat",
+    "lat": 21.2667,
+    "lng": 73.2333,
+    "population": 32000,
+    "households": 6400
+  },
+  {
+    "name": "Mangrol Surat",
+    "city": "Mangrol",
+    "district": "Surat",
+    "lat": 21.1167,
+    "lng": 73.2667,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Palsana",
+    "city": "Palsana",
+    "district": "Surat",
+    "lat": 21.0833,
+    "lng": 72.9833,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Kamrej",
+    "city": "Kamrej",
+    "district": "Surat",
+    "lat": 21.2667,
+    "lng": 72.95,
+    "population": 48000,
+    "households": 9600
+  },
+  {
+    "name": "Mahuva Surat",
+    "city": "Mahuva",
+    "district": "Surat",
+    "lat": 21.0833,
+    "lng": 73.0833,
+    "population": 25000,
+    "households": 5000
+  },
+  {
+    "name": "Umarpada",
+    "city": "Umarpada",
+    "district": "Surat",
+    "lat": 21.2167,
+    "lng": 73.5167,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Choryasi",
+    "city": "Choryasi",
+    "district": "Surat",
+    "lat": 21.15,
+    "lng": 72.9,
+    "population": 145000,
+    "households": 29000
+  },
+  {
+    "name": "Vadodara City",
+    "city": "Vadodara",
+    "district": "Vadodara",
+    "lat": 22.3072,
+    "lng": 73.1812,
+    "population": 1670806,
+    "households": 334161
+  },
+  {
+    "name": "Alkapuri",
+    "city": "Vadodara",
+    "district": "Vadodara",
+    "lat": 22.3119,
+    "lng": 73.1723,
+    "population": 92000,
+    "households": 18400
+  },
+  {
+    "name": "Akota",
+    "city": "Vadodara",
+    "district": "Vadodara",
+    "lat": 22.305,
+    "lng": 73.165,
+    "population": 115000,
+    "households": 23000
+  },
+  {
+    "name": "Manjalpur",
+    "city": "Vadodara",
+    "district": "Vadodara",
+    "lat": 22.274,
+    "lng": 73.186,
+    "population": 145000,
+    "households": 29000
+  },
+  {
+    "name": "Gotri",
+    "city": "Vadodara",
+    "district": "Vadodara",
+    "lat": 22.328,
+    "lng": 73.158,
+    "population": 88000,
+    "households": 17600
+  },
+  {
+    "name": "Waghodia Road",
+    "city": "Vadodara",
+    "district": "Vadodara",
+    "lat": 22.295,
+    "lng": 73.218,
+    "population": 125000,
+    "households": 25000
+  },
+  {
+    "name": "Fatehgunj",
+    "city": "Vadodara",
+    "district": "Vadodara",
+    "lat": 22.328,
+    "lng": 73.192,
+    "population": 78000,
+    "households": 15600
+  },
+  {
+    "name": "Harni",
+    "city": "Vadodara",
+    "district": "Vadodara",
+    "lat": 22.342,
+    "lng": 73.205,
+    "population": 68000,
+    "households": 13600
+  },
+  {
+    "name": "Nizampura",
+    "city": "Vadodara",
+    "district": "Vadodara",
+    "lat": 22.338,
+    "lng": 73.178,
+    "population": 95000,
+    "households": 19000
+  },
+  {
+    "name": "Padra",
+    "city": "Padra",
+    "district": "Vadodara",
+    "lat": 22.2333,
+    "lng": 73.0833,
+    "population": 42000,
+    "households": 8400
+  },
+  {
+    "name": "Karjan",
+    "city": "Karjan",
+    "district": "Vadodara",
+    "lat": 22.05,
+    "lng": 73.1167,
+    "population": 38000,
+    "households": 7600
+  },
+  {
+    "name": "Sinor",
+    "city": "Sinor",
+    "district": "Vadodara",
+    "lat": 21.9,
+    "lng": 73.0167,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Dabhoi",
+    "city": "Dabhoi",
+    "district": "Vadodara",
+    "lat": 22.1833,
+    "lng": 73.4333,
+    "population": 55000,
+    "households": 11000
+  },
+  {
+    "name": "Savli",
+    "city": "Savli",
+    "district": "Vadodara",
+    "lat": 22.5333,
+    "lng": 73.1,
+    "population": 32000,
+    "households": 6400
+  },
+  {
+    "name": "Waghodia",
+    "city": "Waghodia",
+    "district": "Vadodara",
+    "lat": 22.3167,
+    "lng": 73.3667,
+    "population": 25000,
+    "households": 5000
+  },
+  {
+    "name": "Rajkot City",
+    "city": "Rajkot",
+    "district": "Rajkot",
+    "lat": 22.3039,
+    "lng": 70.8022,
+    "population": 1286678,
+    "households": 257335
+  },
+  {
+    "name": "Kalawad Road",
+    "city": "Rajkot",
+    "district": "Rajkot",
+    "lat": 22.313,
+    "lng": 70.778,
+    "population": 98000,
+    "households": 19600
+  },
+  {
+    "name": "150 Feet Ring",
+    "city": "Rajkot",
+    "district": "Rajkot",
+    "lat": 22.292,
+    "lng": 70.785,
+    "population": 112000,
+    "households": 22400
+  },
+  {
+    "name": "Mavdi",
+    "city": "Rajkot",
+    "district": "Rajkot",
+    "lat": 22.278,
+    "lng": 70.772,
+    "population": 88000,
+    "households": 17600
+  },
+  {
+    "name": "University Road",
+    "city": "Rajkot",
+    "district": "Rajkot",
+    "lat": 22.305,
+    "lng": 70.802,
+    "population": 75000,
+    "households": 15000
+  },
+  {
+    "name": "Gondal Road",
+    "city": "Rajkot",
+    "district": "Rajkot",
+    "lat": 22.265,
+    "lng": 70.794,
+    "population": 92000,
+    "households": 18400
+  },
+  {
+    "name": "Bhaktinagar",
+    "city": "Rajkot",
+    "district": "Rajkot",
+    "lat": 22.318,
+    "lng": 70.812,
+    "population": 68000,
+    "households": 13600
+  },
+  {
+    "name": "Gondal",
+    "city": "Gondal",
+    "district": "Rajkot",
+    "lat": 21.9667,
+    "lng": 70.8,
+    "population": 68000,
+    "households": 13600
+  },
+  {
+    "name": "Jetpur",
+    "city": "Jetpur",
+    "district": "Rajkot",
+    "lat": 21.75,
+    "lng": 70.6167,
+    "population": 85000,
+    "households": 17000
+  },
+  {
+    "name": "Dhoraji",
+    "city": "Dhoraji",
+    "district": "Rajkot",
+    "lat": 21.7333,
+    "lng": 70.45,
+    "population": 78000,
+    "households": 15600
+  },
+  {
+    "name": "Upleta",
+    "city": "Upleta",
+    "district": "Rajkot",
+    "lat": 21.7333,
+    "lng": 70.2833,
+    "population": 48000,
+    "households": 9600
+  },
+  {
+    "name": "Jasdan",
+    "city": "Jasdan",
+    "district": "Rajkot",
+    "lat": 22.05,
+    "lng": 71.2,
+    "population": 42000,
+    "households": 8400
+  },
+  {
+    "name": "Paddhari",
+    "city": "Paddhari",
+    "district": "Rajkot",
+    "lat": 22.4333,
+    "lng": 70.5833,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Lodhika",
+    "city": "Lodhika",
+    "district": "Rajkot",
+    "lat": 22.4167,
+    "lng": 70.9833,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Kotda Sangani",
+    "city": "Kotda Sangani",
+    "district": "Rajkot",
+    "lat": 22.1167,
+    "lng": 70.95,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Vinchhiya",
+    "city": "Vinchhiya",
+    "district": "Rajkot",
+    "lat": 22.0,
+    "lng": 71.0833,
+    "population": 12000,
+    "households": 2400
+  },
+  {
+    "name": "Jamkandorna",
+    "city": "Jamkandorna",
+    "district": "Rajkot",
+    "lat": 22.0167,
+    "lng": 70.8833,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Mehsana",
+    "city": "Mehsana",
+    "district": "Mehsana",
+    "lat": 23.588,
+    "lng": 72.3693,
+    "population": 196255,
+    "households": 39251
+  },
+  {
+    "name": "Visnagar",
+    "city": "Visnagar",
+    "district": "Mehsana",
+    "lat": 23.7,
+    "lng": 72.5333,
+    "population": 82000,
+    "households": 16400
+  },
+  {
+    "name": "Unjha",
+    "city": "Unjha",
+    "district": "Mehsana",
+    "lat": 23.8,
+    "lng": 72.4,
+    "population": 65000,
+    "households": 13000
+  },
+  {
+    "name": "Vijapur",
+    "city": "Vijapur",
+    "district": "Mehsana",
+    "lat": 23.5667,
+    "lng": 72.75,
+    "population": 45000,
+    "households": 9000
+  },
+  {
+    "name": "Kadi",
+    "city": "Kadi",
+    "district": "Mehsana",
+    "lat": 23.2833,
+    "lng": 72.3333,
+    "population": 58000,
+    "households": 11600
+  },
+  {
+    "name": "Vadnagar",
+    "city": "Vadnagar",
+    "district": "Mehsana",
+    "lat": 23.7833,
+    "lng": 72.6333,
+    "population": 38000,
+    "households": 7600
+  },
+  {
+    "name": "Becharaji",
+    "city": "Becharaji",
+    "district": "Mehsana",
+    "lat": 23.9333,
+    "lng": 72.2667,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Kheralu",
+    "city": "Kheralu",
+    "district": "Mehsana",
+    "lat": 23.8833,
+    "lng": 72.6167,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Satlasana",
+    "city": "Satlasana",
+    "district": "Mehsana",
+    "lat": 23.8167,
+    "lng": 72.6667,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Palanpur",
+    "city": "Palanpur",
+    "district": "Banaskantha",
+    "lat": 24.1724,
+    "lng": 72.4382,
+    "population": 165268,
+    "households": 33053
+  },
+  {
+    "name": "Deesa",
+    "city": "Deesa",
+    "district": "Banaskantha",
+    "lat": 24.2574,
+    "lng": 72.1857,
+    "population": 85000,
+    "households": 17000
+  },
+  {
+    "name": "Tharad",
+    "city": "Tharad",
+    "district": "Banaskantha",
+    "lat": 24.3967,
+    "lng": 71.6267,
+    "population": 42000,
+    "households": 8400
+  },
+  {
+    "name": "Dhanera",
+    "city": "Dhanera",
+    "district": "Banaskantha",
+    "lat": 24.5,
+    "lng": 72.0167,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Vadgam",
+    "city": "Vadgam",
+    "district": "Banaskantha",
+    "lat": 23.9833,
+    "lng": 72.65,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Danta",
+    "city": "Danta",
+    "district": "Banaskantha",
+    "lat": 24.1833,
+    "lng": 72.7667,
+    "population": 25000,
+    "households": 5000
+  },
+  {
+    "name": "Vav",
+    "city": "Vav",
+    "district": "Banaskantha",
+    "lat": 24.3667,
+    "lng": 71.3667,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Deodar",
+    "city": "Deodar",
+    "district": "Banaskantha",
+    "lat": 24.4,
+    "lng": 72.2,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Suigam",
+    "city": "Suigam",
+    "district": "Banaskantha",
+    "lat": 24.5833,
+    "lng": 71.45,
+    "population": 12000,
+    "households": 2400
+  },
+  {
+    "name": "Dantiwada",
+    "city": "Dantiwada",
+    "district": "Banaskantha",
+    "lat": 24.3167,
+    "lng": 72.4833,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Bhabhar",
+    "city": "Bhabhar",
+    "district": "Banaskantha",
+    "lat": 24.15,
+    "lng": 72.0333,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Amirgarh",
+    "city": "Amirgarh",
+    "district": "Banaskantha",
+    "lat": 24.1333,
+    "lng": 72.1833,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Lakhani",
+    "city": "Lakhani",
+    "district": "Banaskantha",
+    "lat": 23.9167,
+    "lng": 72.8333,
+    "population": 16000,
+    "households": 3200
+  },
+  {
+    "name": "Kankrej",
+    "city": "Kankrej",
+    "district": "Banaskantha",
+    "lat": 23.85,
+    "lng": 72.0667,
+    "population": 25000,
+    "households": 5000
+  },
+  {
+    "name": "Patan",
+    "city": "Patan",
+    "district": "Patan",
+    "lat": 23.8493,
+    "lng": 72.1266,
+    "population": 139131,
+    "households": 27826
+  },
+  {
+    "name": "Sidhpur",
+    "city": "Sidhpur",
+    "district": "Patan",
+    "lat": 23.9167,
+    "lng": 72.3833,
+    "population": 58000,
+    "households": 11600
+  },
+  {
+    "name": "Chanasma",
+    "city": "Chanasma",
+    "district": "Patan",
+    "lat": 23.7167,
+    "lng": 72.1167,
+    "population": 42000,
+    "households": 8400
+  },
+  {
+    "name": "Radhanpur",
+    "city": "Radhanpur",
+    "district": "Patan",
+    "lat": 23.8333,
+    "lng": 71.6,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Harij",
+    "city": "Harij",
+    "district": "Patan",
+    "lat": 23.6833,
+    "lng": 71.9,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Sami",
+    "city": "Sami",
+    "district": "Patan",
+    "lat": 23.7333,
+    "lng": 71.7833,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Santalpur",
+    "city": "Santalpur",
+    "district": "Patan",
+    "lat": 23.9167,
+    "lng": 71.3833,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Saraswati",
+    "city": "Saraswati",
+    "district": "Patan",
+    "lat": 23.7833,
+    "lng": 72.25,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Shankheshwar",
+    "city": "Shankheshwar",
+    "district": "Patan",
+    "lat": 23.9667,
+    "lng": 71.95,
+    "population": 12000,
+    "households": 2400
+  },
+  {
+    "name": "Himmatnagar",
+    "city": "Himmatnagar",
+    "district": "Sabarkantha",
+    "lat": 23.6007,
+    "lng": 72.9649,
+    "population": 84853,
+    "households": 16970
+  },
+  {
+    "name": "Idar",
+    "city": "Idar",
+    "district": "Sabarkantha",
+    "lat": 23.8333,
+    "lng": 73.0,
+    "population": 62000,
+    "households": 12400
+  },
+  {
+    "name": "Prantij",
+    "city": "Prantij",
+    "district": "Sabarkantha",
+    "lat": 23.4333,
+    "lng": 72.85,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Talod",
+    "city": "Talod",
+    "district": "Sabarkantha",
+    "lat": 23.7167,
+    "lng": 72.8667,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Khedbrahma",
+    "city": "Khedbrahma",
+    "district": "Sabarkantha",
+    "lat": 24.0333,
+    "lng": 73.05,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Poshina",
+    "city": "Poshina",
+    "district": "Sabarkantha",
+    "lat": 24.1,
+    "lng": 73.1333,
+    "population": 12000,
+    "households": 2400
+  },
+  {
+    "name": "Vadali",
+    "city": "Vadali",
+    "district": "Sabarkantha",
+    "lat": 23.7833,
+    "lng": 72.9167,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Vijayanagar",
+    "city": "Vijayanagar",
+    "district": "Sabarkantha",
+    "lat": 23.55,
+    "lng": 73.0,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Modasa",
+    "city": "Modasa",
+    "district": "Aravalli",
+    "lat": 23.463,
+    "lng": 73.2963,
+    "population": 68000,
+    "households": 13600
+  },
+  {
+    "name": "Bhiloda",
+    "city": "Bhiloda",
+    "district": "Aravalli",
+    "lat": 23.7167,
+    "lng": 73.35,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Meghraj",
+    "city": "Meghraj",
+    "district": "Aravalli",
+    "lat": 23.5,
+    "lng": 73.5,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Malpur",
+    "city": "Malpur",
+    "district": "Aravalli",
+    "lat": 23.3833,
+    "lng": 73.4667,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Dhansura",
+    "city": "Dhansura",
+    "district": "Aravalli",
+    "lat": 23.3667,
+    "lng": 73.2167,
+    "population": 25000,
+    "households": 5000
+  },
+  {
+    "name": "Bayad",
+    "city": "Bayad",
+    "district": "Aravalli",
+    "lat": 23.2667,
+    "lng": 73.2333,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Anand",
+    "city": "Anand",
+    "district": "Anand",
+    "lat": 22.5645,
+    "lng": 72.9289,
+    "population": 198280,
+    "households": 39656
+  },
+  {
+    "name": "Vallabh Vidyanagar",
+    "city": "Vallabh Vidyanagar",
+    "district": "Anand",
+    "lat": 22.5406,
+    "lng": 72.921,
+    "population": 88000,
+    "households": 17600
+  },
+  {
+    "name": "Nadiad",
+    "city": "Nadiad",
+    "district": "Anand",
+    "lat": 22.6938,
+    "lng": 72.8625,
+    "population": 218000,
+    "households": 43600
+  },
+  {
+    "name": "Kheda",
+    "city": "Kheda",
+    "district": "Anand",
+    "lat": 22.75,
+    "lng": 72.6833,
+    "population": 52000,
+    "households": 10400
+  },
+  {
+    "name": "Petlad",
+    "city": "Petlad",
+    "district": "Anand",
+    "lat": 22.4833,
+    "lng": 72.8,
+    "population": 48000,
+    "households": 9600
+  },
+  {
+    "name": "Borsad",
+    "city": "Borsad",
+    "district": "Anand",
+    "lat": 22.4,
+    "lng": 72.9,
+    "population": 58000,
+    "households": 11600
+  },
+  {
+    "name": "Anklav",
+    "city": "Anklav",
+    "district": "Anand",
+    "lat": 22.6167,
+    "lng": 72.9833,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Umreth",
+    "city": "Umreth",
+    "district": "Anand",
+    "lat": 22.7167,
+    "lng": 73.1167,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Sojitra",
+    "city": "Sojitra",
+    "district": "Anand",
+    "lat": 22.5333,
+    "lng": 72.7167,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Tarapur",
+    "city": "Tarapur",
+    "district": "Anand",
+    "lat": 22.5667,
+    "lng": 72.6833,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Kheda City",
+    "city": "Kheda",
+    "district": "Kheda",
+    "lat": 22.75,
+    "lng": 72.6833,
+    "population": 52000,
+    "households": 10400
+  },
+  {
+    "name": "Mahemdabad",
+    "city": "Mahemdabad",
+    "district": "Kheda",
+    "lat": 22.8333,
+    "lng": 72.7667,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Mahudha",
+    "city": "Mahudha",
+    "district": "Kheda",
+    "lat": 22.8167,
+    "lng": 72.9333,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Thasra",
+    "city": "Thasra",
+    "district": "Kheda",
+    "lat": 22.8,
+    "lng": 73.2,
+    "population": 32000,
+    "households": 6400
+  },
+  {
+    "name": "Kathlal",
+    "city": "Kathlal",
+    "district": "Kheda",
+    "lat": 22.9,
+    "lng": 72.9167,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Kapadvanj",
+    "city": "Kapadvanj",
+    "district": "Kheda",
+    "lat": 23.0167,
+    "lng": 73.0667,
+    "population": 45000,
+    "households": 9000
+  },
+  {
+    "name": "Vaso",
+    "city": "Vaso",
+    "district": "Kheda",
+    "lat": 22.65,
+    "lng": 72.7833,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Galteshwar",
+    "city": "Galteshwar",
+    "district": "Kheda",
+    "lat": 22.8667,
+    "lng": 73.0,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Matar",
+    "city": "Matar",
+    "district": "Kheda",
+    "lat": 22.6667,
+    "lng": 72.6167,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Godhra",
+    "city": "Godhra",
+    "district": "Panchmahal",
+    "lat": 22.7788,
+    "lng": 73.6143,
+    "population": 144759,
+    "households": 28951
+  },
+  {
+    "name": "Halol",
+    "city": "Halol",
+    "district": "Panchmahal",
+    "lat": 22.5,
+    "lng": 73.4667,
+    "population": 68000,
+    "households": 13600
+  },
+  {
+    "name": "Kalol Panchmahal",
+    "city": "Kalol",
+    "district": "Panchmahal",
+    "lat": 22.6,
+    "lng": 73.45,
+    "population": 42000,
+    "households": 8400
+  },
+  {
+    "name": "Lunawada",
+    "city": "Lunawada",
+    "district": "Panchmahal",
+    "lat": 23.1333,
+    "lng": 73.6167,
+    "population": 38000,
+    "households": 7600
+  },
+  {
+    "name": "Shehera",
+    "city": "Shehera",
+    "district": "Panchmahal",
+    "lat": 22.9,
+    "lng": 73.6667,
+    "population": 25000,
+    "households": 5000
+  },
+  {
+    "name": "Jambughoda",
+    "city": "Jambughoda",
+    "district": "Panchmahal",
+    "lat": 22.3333,
+    "lng": 73.7167,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Morwa Hadaf",
+    "city": "Morwa Hadaf",
+    "district": "Panchmahal",
+    "lat": 22.8333,
+    "lng": 73.7167,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Ghoghamba",
+    "city": "Ghoghamba",
+    "district": "Panchmahal",
+    "lat": 22.65,
+    "lng": 73.7833,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Santrampur",
+    "city": "Santrampur",
+    "district": "Panchmahal",
+    "lat": 23.15,
+    "lng": 73.7833,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Dahod",
+    "city": "Dahod",
+    "district": "Dahod",
+    "lat": 22.8358,
+    "lng": 74.2558,
+    "population": 96641,
+    "households": 19328
+  },
+  {
+    "name": "Limkheda",
+    "city": "Limkheda",
+    "district": "Dahod",
+    "lat": 22.8167,
+    "lng": 74.0167,
+    "population": 25000,
+    "households": 5000
+  },
+  {
+    "name": "Devgadh Baria",
+    "city": "Devgadh Baria",
+    "district": "Dahod",
+    "lat": 22.7,
+    "lng": 73.9,
+    "population": 38000,
+    "households": 7600
+  },
+  {
+    "name": "Fatepura",
+    "city": "Fatepura",
+    "district": "Dahod",
+    "lat": 23.05,
+    "lng": 74.3333,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Jhalod",
+    "city": "Jhalod",
+    "district": "Dahod",
+    "lat": 23.15,
+    "lng": 74.15,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Garbada",
+    "city": "Garbada",
+    "district": "Dahod",
+    "lat": 22.8833,
+    "lng": 74.15,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Dhanpur",
+    "city": "Dhanpur",
+    "district": "Dahod",
+    "lat": 22.9,
+    "lng": 74.4,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Zalod",
+    "city": "Zalod",
+    "district": "Dahod",
+    "lat": 23.0333,
+    "lng": 74.3167,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Lunawada Mahisagar",
+    "city": "Lunawada",
+    "district": "Mahisagar",
+    "lat": 23.1333,
+    "lng": 73.6167,
+    "population": 38000,
+    "households": 7600
+  },
+  {
+    "name": "Khanpur",
+    "city": "Khanpur",
+    "district": "Mahisagar",
+    "lat": 23.25,
+    "lng": 73.7667,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Virpur",
+    "city": "Virpur",
+    "district": "Mahisagar",
+    "lat": 23.0833,
+    "lng": 73.5167,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Santrampur Mahisagar",
+    "city": "Santrampur",
+    "district": "Mahisagar",
+    "lat": 23.15,
+    "lng": 73.7833,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Kadana",
+    "city": "Kadana",
+    "district": "Mahisagar",
+    "lat": 23.2667,
+    "lng": 73.7167,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Chhota Udaipur",
+    "city": "Chhota Udaipur",
+    "district": "Chhota Udaipur",
+    "lat": 22.3,
+    "lng": 74.0167,
+    "population": 45000,
+    "households": 9000
+  },
+  {
+    "name": "Kavant",
+    "city": "Kavant",
+    "district": "Chhota Udaipur",
+    "lat": 22.2167,
+    "lng": 74.2333,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Naswadi",
+    "city": "Naswadi",
+    "district": "Chhota Udaipur",
+    "lat": 22.1833,
+    "lng": 74.1833,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Bodeli",
+    "city": "Bodeli",
+    "district": "Chhota Udaipur",
+    "lat": 22.3667,
+    "lng": 73.85,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Jetpur Pavi",
+    "city": "Jetpur Pavi",
+    "district": "Chhota Udaipur",
+    "lat": 22.3333,
+    "lng": 73.9167,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Sankheda",
+    "city": "Sankheda",
+    "district": "Chhota Udaipur",
+    "lat": 22.2,
+    "lng": 73.5833,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Rajpipla",
+    "city": "Rajpipla",
+    "district": "Narmada",
+    "lat": 21.8729,
+    "lng": 73.499,
+    "population": 38000,
+    "households": 7600
+  },
+  {
+    "name": "Nandod",
+    "city": "Nandod",
+    "district": "Narmada",
+    "lat": 21.8833,
+    "lng": 73.5167,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Sagbara",
+    "city": "Sagbara",
+    "district": "Narmada",
+    "lat": 21.65,
+    "lng": 73.6833,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Tilakwada",
+    "city": "Tilakwada",
+    "district": "Narmada",
+    "lat": 21.9833,
+    "lng": 73.5833,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Dediapada",
+    "city": "Dediapada",
+    "district": "Narmada",
+    "lat": 21.8167,
+    "lng": 73.6667,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Garudeshwar",
+    "city": "Garudeshwar",
+    "district": "Narmada",
+    "lat": 21.9,
+    "lng": 73.6167,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Bharuch",
+    "city": "Bharuch",
+    "district": "Bharuch",
+    "lat": 21.7051,
+    "lng": 72.9959,
+    "population": 180480,
+    "households": 36096
+  },
+  {
+    "name": "Ankleshwar",
+    "city": "Ankleshwar",
+    "district": "Bharuch",
+    "lat": 21.6267,
+    "lng": 73.0033,
+    "population": 125000,
+    "households": 25000
+  },
+  {
+    "name": "Jhagadia",
+    "city": "Jhagadia",
+    "district": "Bharuch",
+    "lat": 21.5833,
+    "lng": 73.0833,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Hansot",
+    "city": "Hansot",
+    "district": "Bharuch",
+    "lat": 21.5833,
+    "lng": 72.8167,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Vagra",
+    "city": "Vagra",
+    "district": "Bharuch",
+    "lat": 21.5,
+    "lng": 72.7667,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Amod",
+    "city": "Amod",
+    "district": "Bharuch",
+    "lat": 21.9667,
+    "lng": 72.9,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Jambusar",
+    "city": "Jambusar",
+    "district": "Bharuch",
+    "lat": 22.05,
+    "lng": 72.8,
+    "population": 32000,
+    "households": 6400
+  },
+  {
+    "name": "Walia",
+    "city": "Walia",
+    "district": "Bharuch",
+    "lat": 21.3667,
+    "lng": 73.0167,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Valia",
+    "city": "Valia",
+    "district": "Bharuch",
+    "lat": 21.3833,
+    "lng": 73.05,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Navsari",
+    "city": "Navsari",
+    "district": "Navsari",
+    "lat": 20.9467,
+    "lng": 72.952,
+    "population": 168570,
+    "households": 33714
+  },
+  {
+    "name": "Gandevi",
+    "city": "Gandevi",
+    "district": "Navsari",
+    "lat": 20.8167,
+    "lng": 72.9833,
+    "population": 42000,
+    "households": 8400
+  },
+  {
+    "name": "Chikhli",
+    "city": "Chikhli",
+    "district": "Navsari",
+    "lat": 20.75,
+    "lng": 72.9167,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Vansda",
+    "city": "Vansda",
+    "district": "Navsari",
+    "lat": 20.75,
+    "lng": 73.35,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Khergam",
+    "city": "Khergam",
+    "district": "Navsari",
+    "lat": 20.8333,
+    "lng": 73.1,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Jalalpore",
+    "city": "Jalalpore",
+    "district": "Navsari",
+    "lat": 20.9833,
+    "lng": 72.9333,
+    "population": 55000,
+    "households": 11000
+  },
+  {
+    "name": "Valsad",
+    "city": "Valsad",
+    "district": "Valsad",
+    "lat": 20.5992,
+    "lng": 72.9342,
+    "population": 175295,
+    "households": 35059
+  },
+  {
+    "name": "Vapi",
+    "city": "Vapi",
+    "district": "Valsad",
+    "lat": 20.3714,
+    "lng": 72.9079,
+    "population": 185000,
+    "households": 37000
+  },
+  {
+    "name": "Bulsar",
+    "city": "Bulsar",
+    "district": "Valsad",
+    "lat": 20.5992,
+    "lng": 72.9342,
+    "population": 175000,
+    "households": 35000
+  },
+  {
+    "name": "Umbergaon",
+    "city": "Umbergaon",
+    "district": "Valsad",
+    "lat": 20.1833,
+    "lng": 72.75,
+    "population": 45000,
+    "households": 9000
+  },
+  {
+    "name": "Pardi",
+    "city": "Pardi",
+    "district": "Valsad",
+    "lat": 20.5,
+    "lng": 72.95,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Dharampur",
+    "city": "Dharampur",
+    "district": "Valsad",
+    "lat": 20.5333,
+    "lng": 73.1833,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Kaprada",
+    "city": "Kaprada",
+    "district": "Valsad",
+    "lat": 20.35,
+    "lng": 73.1667,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Vyara",
+    "city": "Vyara",
+    "district": "Tapi",
+    "lat": 21.1132,
+    "lng": 73.3967,
+    "population": 68000,
+    "households": 13600
+  },
+  {
+    "name": "Songadh",
+    "city": "Songadh",
+    "district": "Tapi",
+    "lat": 21.1667,
+    "lng": 73.5833,
+    "population": 32000,
+    "households": 6400
+  },
+  {
+    "name": "Uchchhal",
+    "city": "Uchchhal",
+    "district": "Tapi",
+    "lat": 21.0667,
+    "lng": 73.5167,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Nizar",
+    "city": "Nizar",
+    "district": "Tapi",
+    "lat": 20.9833,
+    "lng": 73.4,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Valod",
+    "city": "Valod",
+    "district": "Tapi",
+    "lat": 21.05,
+    "lng": 73.2,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Dolvan",
+    "city": "Dolvan",
+    "district": "Tapi",
+    "lat": 21.3,
+    "lng": 73.55,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Ahwa",
+    "city": "Ahwa",
+    "district": "Dangs",
+    "lat": 20.757,
+    "lng": 73.6831,
+    "population": 15265,
+    "households": 3053
+  },
+  {
+    "name": "Subir",
+    "city": "Subir",
+    "district": "Dangs",
+    "lat": 20.75,
+    "lng": 73.8833,
+    "population": 8000,
+    "households": 1600
+  },
+  {
+    "name": "Waghai",
+    "city": "Waghai",
+    "district": "Dangs",
+    "lat": 20.7667,
+    "lng": 73.4833,
+    "population": 12000,
+    "households": 2400
+  },
+  {
+    "name": "Saputara",
+    "city": "Saputara",
+    "district": "Dangs",
+    "lat": 20.5706,
+    "lng": 73.7537,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Surendranagar",
+    "city": "Surendranagar",
+    "district": "Surendranagar",
+    "lat": 22.7269,
+    "lng": 71.6481,
+    "population": 161578,
+    "households": 32315
+  },
+  {
+    "name": "Wadhwan",
+    "city": "Wadhwan",
+    "district": "Surendranagar",
+    "lat": 22.7,
+    "lng": 71.6833,
+    "population": 65000,
+    "households": 13000
+  },
+  {
+    "name": "Dhrangadhra",
+    "city": "Dhrangadhra",
+    "district": "Surendranagar",
+    "lat": 22.9914,
+    "lng": 71.4681,
+    "population": 68000,
+    "households": 13600
+  },
+  {
+    "name": "Limbdi",
+    "city": "Limbdi",
+    "district": "Surendranagar",
+    "lat": 22.5667,
+    "lng": 71.8167,
+    "population": 38000,
+    "households": 7600
+  },
+  {
+    "name": "Chotila",
+    "city": "Chotila",
+    "district": "Surendranagar",
+    "lat": 22.4167,
+    "lng": 71.1833,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Halvad",
+    "city": "Halvad",
+    "district": "Surendranagar",
+    "lat": 23.0167,
+    "lng": 71.1833,
+    "population": 32000,
+    "households": 6400
+  },
+  {
+    "name": "Lakhtar",
+    "city": "Lakhtar",
+    "district": "Surendranagar",
+    "lat": 22.8667,
+    "lng": 71.7833,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Chuda",
+    "city": "Chuda",
+    "district": "Surendranagar",
+    "lat": 22.5833,
+    "lng": 71.6833,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Dasada",
+    "city": "Dasada",
+    "district": "Surendranagar",
+    "lat": 23.0833,
+    "lng": 71.6167,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Muli",
+    "city": "Muli",
+    "district": "Surendranagar",
+    "lat": 22.7333,
+    "lng": 71.3167,
+    "population": 12000,
+    "households": 2400
+  },
+  {
+    "name": "Patdi",
+    "city": "Patdi",
+    "district": "Surendranagar",
+    "lat": 23.1833,
+    "lng": 71.8833,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Sayla",
+    "city": "Sayla",
+    "district": "Surendranagar",
+    "lat": 22.55,
+    "lng": 71.4833,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Thangadh",
+    "city": "Thangadh",
+    "district": "Surendranagar",
+    "lat": 22.5667,
+    "lng": 71.1833,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Bhavnagar",
+    "city": "Bhavnagar",
+    "district": "Bhavnagar",
+    "lat": 21.7645,
+    "lng": 72.1519,
+    "population": 593368,
+    "households": 118673
+  },
+  {
+    "name": "Sihor",
+    "city": "Sihor",
+    "district": "Bhavnagar",
+    "lat": 21.7,
+    "lng": 71.9667,
+    "population": 48000,
+    "households": 9600
+  },
+  {
+    "name": "Palitana",
+    "city": "Palitana",
+    "district": "Bhavnagar",
+    "lat": 21.5167,
+    "lng": 71.8167,
+    "population": 52000,
+    "households": 10400
+  },
+  {
+    "name": "Mahuva Bhavnagar",
+    "city": "Mahuva",
+    "district": "Bhavnagar",
+    "lat": 21.0833,
+    "lng": 71.7667,
+    "population": 45000,
+    "households": 9000
+  },
+  {
+    "name": "Talaja",
+    "city": "Talaja",
+    "district": "Bhavnagar",
+    "lat": 21.35,
+    "lng": 72.0333,
+    "population": 32000,
+    "households": 6400
+  },
+  {
+    "name": "Gariadhar",
+    "city": "Gariadhar",
+    "district": "Bhavnagar",
+    "lat": 21.5167,
+    "lng": 71.5833,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Ghogha",
+    "city": "Ghogha",
+    "district": "Bhavnagar",
+    "lat": 21.6667,
+    "lng": 72.2833,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Vallabhipur",
+    "city": "Vallabhipur",
+    "district": "Bhavnagar",
+    "lat": 21.8833,
+    "lng": 71.8833,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Jesar",
+    "city": "Jesar",
+    "district": "Bhavnagar",
+    "lat": 21.75,
+    "lng": 71.6667,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Umrala",
+    "city": "Umrala",
+    "district": "Bhavnagar",
+    "lat": 21.75,
+    "lng": 71.75,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Botad",
+    "city": "Botad",
+    "district": "Botad",
+    "lat": 22.1699,
+    "lng": 71.6665,
+    "population": 82000,
+    "households": 16400
+  },
+  {
+    "name": "Gadhada",
+    "city": "Gadhada",
+    "district": "Botad",
+    "lat": 21.9667,
+    "lng": 71.5667,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Barwala",
+    "city": "Barwala",
+    "district": "Botad",
+    "lat": 22.05,
+    "lng": 71.8833,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Ranpur Botad",
+    "city": "Ranpur",
+    "district": "Botad",
+    "lat": 22.1833,
+    "lng": 71.8333,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Amreli",
+    "city": "Amreli",
+    "district": "Amreli",
+    "lat": 21.6034,
+    "lng": 71.2212,
+    "population": 132427,
+    "households": 26485
+  },
+  {
+    "name": "Rajula",
+    "city": "Rajula",
+    "district": "Amreli",
+    "lat": 21.0333,
+    "lng": 71.4333,
+    "population": 48000,
+    "households": 9600
+  },
+  {
+    "name": "Savarkundla",
+    "city": "Savarkundla",
+    "district": "Amreli",
+    "lat": 21.3333,
+    "lng": 71.3167,
+    "population": 42000,
+    "households": 8400
+  },
+  {
+    "name": "Lathi",
+    "city": "Lathi",
+    "district": "Amreli",
+    "lat": 21.7333,
+    "lng": 71.3833,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Bagasara",
+    "city": "Bagasara",
+    "district": "Amreli",
+    "lat": 21.4833,
+    "lng": 70.95,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Dhari",
+    "city": "Dhari",
+    "district": "Amreli",
+    "lat": 21.3167,
+    "lng": 71.0167,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Jafrabad",
+    "city": "Jafrabad",
+    "district": "Amreli",
+    "lat": 20.8667,
+    "lng": 71.3667,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Kunkavav",
+    "city": "Kunkavav",
+    "district": "Amreli",
+    "lat": 21.6333,
+    "lng": 71.0333,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Khambha",
+    "city": "Khambha",
+    "district": "Amreli",
+    "lat": 21.3167,
+    "lng": 71.5833,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Liliya",
+    "city": "Liliya",
+    "district": "Amreli",
+    "lat": 21.7333,
+    "lng": 71.0833,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Veraval",
+    "city": "Veraval",
+    "district": "Gir Somnath",
+    "lat": 20.9031,
+    "lng": 70.3678,
+    "population": 125000,
+    "households": 25000
+  },
+  {
+    "name": "Somnath",
+    "city": "Somnath",
+    "district": "Gir Somnath",
+    "lat": 20.888,
+    "lng": 70.4012,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Una",
+    "city": "Una",
+    "district": "Gir Somnath",
+    "lat": 20.82,
+    "lng": 71.0369,
+    "population": 65000,
+    "households": 13000
+  },
+  {
+    "name": "Talala",
+    "city": "Talala",
+    "district": "Gir Somnath",
+    "lat": 20.9667,
+    "lng": 70.7333,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Kodinar",
+    "city": "Kodinar",
+    "district": "Gir Somnath",
+    "lat": 20.7833,
+    "lng": 70.7,
+    "population": 32000,
+    "households": 6400
+  },
+  {
+    "name": "Sutrapada",
+    "city": "Sutrapada",
+    "district": "Gir Somnath",
+    "lat": 20.8833,
+    "lng": 70.5167,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Gir Gadhada",
+    "city": "Gir Gadhada",
+    "district": "Gir Somnath",
+    "lat": 21.05,
+    "lng": 70.6167,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Junagadh",
+    "city": "Junagadh",
+    "district": "Junagadh",
+    "lat": 21.5222,
+    "lng": 70.4579,
+    "population": 319462,
+    "households": 63892
+  },
+  {
+    "name": "Keshod",
+    "city": "Keshod",
+    "district": "Junagadh",
+    "lat": 21.3,
+    "lng": 70.25,
+    "population": 42000,
+    "households": 8400
+  },
+  {
+    "name": "Visavadar",
+    "city": "Visavadar",
+    "district": "Junagadh",
+    "lat": 21.4333,
+    "lng": 70.7,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Mangrol Junagadh",
+    "city": "Mangrol",
+    "district": "Junagadh",
+    "lat": 21.1167,
+    "lng": 70.1167,
+    "population": 38000,
+    "households": 7600
+  },
+  {
+    "name": "Vanthali",
+    "city": "Vanthali",
+    "district": "Junagadh",
+    "lat": 21.4833,
+    "lng": 70.3167,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Mendarda",
+    "city": "Mendarda",
+    "district": "Junagadh",
+    "lat": 21.3167,
+    "lng": 70.4667,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Malia Junagadh",
+    "city": "Malia",
+    "district": "Junagadh",
+    "lat": 21.65,
+    "lng": 70.5667,
+    "population": 15000,
+    "households": 3000
+  },
+  {
+    "name": "Bhesan",
+    "city": "Bhesan",
+    "district": "Junagadh",
+    "lat": 21.0333,
+    "lng": 70.4833,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Porbandar",
+    "city": "Porbandar",
+    "district": "Porbandar",
+    "lat": 21.6417,
+    "lng": 69.6293,
+    "population": 225132,
+    "households": 45026
+  },
+  {
+    "name": "Kutiyana",
+    "city": "Kutiyana",
+    "district": "Porbandar",
+    "lat": 21.6167,
+    "lng": 69.9833,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Ranavav",
+    "city": "Ranavav",
+    "district": "Porbandar",
+    "lat": 21.75,
+    "lng": 69.7333,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Jamnagar",
+    "city": "Jamnagar",
+    "district": "Jamnagar",
+    "lat": 22.4707,
+    "lng": 70.0577,
+    "population": 600943,
+    "households": 120188
+  },
+  {
+    "name": "Jamnagar Rural",
+    "city": "Jamnagar",
+    "district": "Jamnagar",
+    "lat": 22.4,
+    "lng": 70.0667,
+    "population": 52000,
+    "households": 10400
+  },
+  {
+    "name": "Kalavad",
+    "city": "Kalavad",
+    "district": "Jamnagar",
+    "lat": 22.2,
+    "lng": 70.3833,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Dhrol",
+    "city": "Dhrol",
+    "district": "Jamnagar",
+    "lat": 22.5667,
+    "lng": 70.4167,
+    "population": 32000,
+    "households": 6400
+  },
+  {
+    "name": "Jodia",
+    "city": "Jodia",
+    "district": "Jamnagar",
+    "lat": 22.7167,
+    "lng": 70.2833,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Lalpur",
+    "city": "Lalpur",
+    "district": "Jamnagar",
+    "lat": 22.0667,
+    "lng": 69.9167,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Jamjodhpur",
+    "city": "Jamjodhpur",
+    "district": "Jamnagar",
+    "lat": 22.0333,
+    "lng": 70.1167,
+    "population": 25000,
+    "households": 5000
+  },
+  {
+    "name": "Dwarka",
+    "city": "Dwarka",
+    "district": "Devbhoomi Dwarka",
+    "lat": 22.2394,
+    "lng": 68.9678,
+    "population": 38000,
+    "households": 7600
+  },
+  {
+    "name": "Khambhalia",
+    "city": "Khambhalia",
+    "district": "Devbhoomi Dwarka",
+    "lat": 22.2,
+    "lng": 69.65,
+    "population": 55000,
+    "households": 11000
+  },
+  {
+    "name": "Kalyanpur",
+    "city": "Kalyanpur",
+    "district": "Devbhoomi Dwarka",
+    "lat": 22.4,
+    "lng": 69.15,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Bhanvad",
+    "city": "Bhanvad",
+    "district": "Devbhoomi Dwarka",
+    "lat": 22.1167,
+    "lng": 69.7833,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Jhadeshwar",
+    "city": "Jhadeshwar",
+    "district": "Devbhoomi Dwarka",
+    "lat": 22.2833,
+    "lng": 69.4333,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Morbi",
+    "city": "Morbi",
+    "district": "Morbi",
+    "lat": 22.8174,
+    "lng": 70.8328,
+    "population": 195000,
+    "households": 39000
+  },
+  {
+    "name": "Tankara",
+    "city": "Tankara",
+    "district": "Morbi",
+    "lat": 22.6833,
+    "lng": 70.7333,
+    "population": 32000,
+    "households": 6400
+  },
+  {
+    "name": "Wankaner",
+    "city": "Wankaner",
+    "district": "Morbi",
+    "lat": 22.6167,
+    "lng": 70.95,
+    "population": 55000,
+    "households": 11000
+  },
+  {
+    "name": "Maliya Miyana",
+    "city": "Maliya Miyana",
+    "district": "Morbi",
+    "lat": 22.9333,
+    "lng": 71.0667,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Halvad Morbi",
+    "city": "Halvad",
+    "district": "Morbi",
+    "lat": 23.0167,
+    "lng": 71.1833,
+    "population": 32000,
+    "households": 6400
+  },
+  {
+    "name": "Bhuj",
+    "city": "Bhuj",
+    "district": "Kutch",
+    "lat": 23.2419,
+    "lng": 69.6669,
+    "population": 152763,
+    "households": 30552
+  },
+  {
+    "name": "Gandhidham",
+    "city": "Gandhidham",
+    "district": "Kutch",
+    "lat": 23.0753,
+    "lng": 70.1337,
+    "population": 248670,
+    "households": 49734
+  },
+  {
+    "name": "Anjar",
+    "city": "Anjar",
+    "district": "Kutch",
+    "lat": 23.1079,
+    "lng": 70.0279,
+    "population": 75000,
+    "households": 15000
+  },
+  {
+    "name": "Mandvi Kutch",
+    "city": "Mandvi",
+    "district": "Kutch",
+    "lat": 22.8333,
+    "lng": 69.35,
+    "population": 45000,
+    "households": 9000
+  },
+  {
+    "name": "Mundra",
+    "city": "Mundra",
+    "district": "Kutch",
+    "lat": 22.8393,
+    "lng": 69.7226,
+    "population": 55000,
+    "households": 11000
+  },
+  {
+    "name": "Nakhatrana",
+    "city": "Nakhatrana",
+    "district": "Kutch",
+    "lat": 23.3333,
+    "lng": 69.2667,
+    "population": 22000,
+    "households": 4400
+  },
+  {
+    "name": "Rapar",
+    "city": "Rapar",
+    "district": "Kutch",
+    "lat": 23.5667,
+    "lng": 70.6333,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Lakhpat",
+    "city": "Lakhpat",
+    "district": "Kutch",
+    "lat": 23.8167,
+    "lng": 68.7667,
+    "population": 8000,
+    "households": 1600
+  },
+  {
+    "name": "Abdasa",
+    "city": "Abdasa",
+    "district": "Kutch",
+    "lat": 23.3333,
+    "lng": 68.75,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Bhachau",
+    "city": "Bhachau",
+    "district": "Kutch",
+    "lat": 23.2981,
+    "lng": 70.3386,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Gandhidham Rural",
+    "city": "Gandhidham",
+    "district": "Kutch",
+    "lat": 23.1167,
+    "lng": 70.1667,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Idar Sabarkantha",
+    "city": "Idar",
+    "district": "Sabarkantha",
+    "lat": 23.8333,
+    "lng": 73.0,
+    "population": 62000,
+    "households": 12400
+  },
+  {
+    "name": "Tharad Vav",
+    "city": "Tharad",
+    "district": "Vav-Tharad",
+    "lat": 24.3967,
+    "lng": 71.6267,
+    "population": 42000,
+    "households": 8400
+  },
+  {
+    "name": "Vav Tharad",
+    "city": "Vav",
+    "district": "Vav-Tharad",
+    "lat": 24.3667,
+    "lng": 71.3667,
+    "population": 18000,
+    "households": 3600
+  },
+  {
+    "name": "Dhanera Tharad",
+    "city": "Dhanera",
+    "district": "Vav-Tharad",
+    "lat": 24.5,
+    "lng": 72.0167,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Surat New West",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.17,
+    "lng": 72.78,
+    "population": 95000,
+    "households": 19000
+  },
+  {
+    "name": "Hazira",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.1167,
+    "lng": 72.6333,
+    "population": 45000,
+    "households": 9000
+  },
+  {
+    "name": "Pandesara",
+    "city": "Surat",
+    "district": "Surat",
+    "lat": 21.2,
+    "lng": 72.9333,
+    "population": 85000,
+    "households": 17000
+  },
+  {
+    "name": "Kim",
+    "city": "Kim",
+    "district": "Surat",
+    "lat": 21.3333,
+    "lng": 73.05,
+    "population": 32000,
+    "households": 6400
+  },
+  {
+    "name": "Sachin",
+    "city": "Sachin",
+    "district": "Surat",
+    "lat": 21.0833,
+    "lng": 72.8667,
+    "population": 55000,
+    "households": 11000
+  },
+  {
+    "name": "Motera",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.0997,
+    "lng": 72.5952,
+    "population": 65000,
+    "households": 13000
+  },
+  {
+    "name": "Tragad",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.12,
+    "lng": 72.64,
+    "population": 48000,
+    "households": 9600
+  },
+  {
+    "name": "Nava Vadaj",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.0625,
+    "lng": 72.569,
+    "population": 72000,
+    "households": 14400
+  },
+  {
+    "name": "Krishnanagar",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.057,
+    "lng": 72.605,
+    "population": 85000,
+    "households": 17000
+  },
+  {
+    "name": "Ghodasar",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 22.9838,
+    "lng": 72.6259,
+    "population": 92000,
+    "households": 18400
+  },
+  {
+    "name": "Hathijan",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 22.95,
+    "lng": 72.65,
+    "population": 55000,
+    "households": 11000
+  },
+  {
+    "name": "Lambha",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 22.9667,
+    "lng": 72.5833,
+    "population": 42000,
+    "households": 8400
+  },
+  {
+    "name": "Shela",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.0133,
+    "lng": 72.453,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Ghuma",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.0,
+    "lng": 72.4667,
+    "population": 28000,
+    "households": 5600
+  },
+  {
+    "name": "Makarba",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.01,
+    "lng": 72.525,
+    "population": 45000,
+    "households": 9000
+  },
+  {
+    "name": "Sarkhej",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 22.9833,
+    "lng": 72.5167,
+    "population": 58000,
+    "households": 11600
+  },
+  {
+    "name": "Narol",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 22.9667,
+    "lng": 72.6,
+    "population": 75000,
+    "households": 15000
+  },
+  {
+    "name": "Oganaj",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.1333,
+    "lng": 72.6,
+    "population": 35000,
+    "households": 7000
+  },
+  {
+    "name": "Zundal",
+    "city": "Ahmedabad",
+    "district": "Ahmedabad",
+    "lat": 23.15,
+    "lng": 72.6333,
+    "population": 28000,
+    "households": 5600
+  }
 ]
