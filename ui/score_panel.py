@@ -42,9 +42,9 @@ def render_address_trend(address: str) -> None:
     delta_str   = f"+{delta}" if delta >= 0 else str(delta)
 
     col1, col2, col3 = st.columns(3)
-    col1.metric("First Score",  first_score)
-    col2.metric("Latest Score", last_score, delta=delta_str)
-    col3.metric("Times Scored", len(history))
+    col1.metric(f"First Score",  first_score)
+    col2.metric(f"Latest Score", last_score, delta=delta_str)
+    col3.metric(f"Times Scored", len(history))
 
     # ── Line chart ────────────────────────────────────────
     fig = go.Figure()
@@ -95,7 +95,9 @@ def render_address_trend(address: str) -> None:
         margin=dict(l=10, r=10, t=20, b=60),
         showlegend=False,
     )
-    st.plotly_chart(fig, use_container_width=True)
+    import hashlib
+    chart_key = hashlib.md5(address.encode()).hexdigest()[:8]
+    st.plotly_chart(fig, use_container_width=True, key=f"trend_{chart_key}")
 
     # ── History table ─────────────────────────────────────
     st.markdown("**All Scores for This Address**")
