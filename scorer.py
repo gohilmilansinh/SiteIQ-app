@@ -15,34 +15,102 @@ from config import (
     WEIGHTS,
 )
 from census_data import score_population
+from cache_layer import cache_get, cache_set, grid_key, address_key
 
 logger = logging.getLogger(__name__)
 
+# ── Cache TTLs (days) — tuned per how often the underlying reality changes
+TTL_GEOCODE       = 365   # an address's coordinates never change
+TTL_DEMAND        = 60    # daytime signals / population shift slowly
+TTL_FOOTFALL      = 60
+TTL_COMPETITION   = 30    # competitor landscape is the most dynamic
+TTL_ACCESSIBILITY = 180   # road networks rarely change
+TTL_CATCHMENT     = 60
+TTL_SPENDING      = 90
+
 
 def cached_geocode(address: str) -> Tuple[Any, Any]:
-    return geocode(address)
+    key = address_key(address)
+    hit = cache_get(key, max_age_days=TTL_GEOCODE)
+    if hit is not None:
+        return hit.get("lat"), hit.get("lng")
 
-def cached_demand(lat: float, lng: float, brand_type: str = "restaurant") -> Tuple[float, Dict[str, Any]]:
-    return score_demand(lat, lng, brand_type)
+    lat, lng = geocode(address)
+    if lat is not None:
+        cache_set(key, {"lat": lat, "lng": lng})
+    return lat, lng
+
+
+def cached_demand(
+    lat: float, lng: float, brand_type: str = "restaurant"
+) -> Tuple[float, Dict[str, Any]]:
+    key = f"{grid_key(lat, lng)}:demand:{brand_type}"
+    hit = cache_get(key, max_age_days=TTL_DEMAND)
+    if hit is not None:
+        return hit["score"], hit["data"]
+
+    score, data = score_demand(lat, lng, brand_type)
+    cache_set(key, {"score": score, "data": data})
+    return score, data
+
 
 def cached_footfall(
     lat: float, lng: float, brand_type: str = "restaurant"
 ) -> Tuple[float, Dict[str, int]]:
-    return score_footfall(lat, lng, brand_type)
+    key = f"{grid_key(lat, lng)}:footfall:{brand_type}"
+    hit = cache_get(key, max_age_days=TTL_FOOTFALL)
+    if hit is not None:
+        return hit["score"], hit["data"]
+
+    score, data = score_footfall(lat, lng, brand_type)
+    cache_set(key, {"score": score, "data": data})
+    return score, data
+
 
 def cached_competition(
     lat: float, lng: float, brand_type: str = "restaurant"
 ) -> Tuple[float, List[Dict[str, Any]]]:
-    return score_competition(lat, lng, brand_type)
+    key = f"{grid_key(lat, lng)}:competition:{brand_type}"
+    hit = cache_get(key, max_age_days=TTL_COMPETITION)
+    if hit is not None:
+        return hit["score"], hit["data"]
+
+    score, data = score_competition(lat, lng, brand_type)
+    cache_set(key, {"score": score, "data": data})
+    return score, data
+
 
 def cached_accessibility(lat: float, lng: float) -> Tuple[float, Dict[str, int]]:
-    return score_accessibility(lat, lng)
+    key = f"{grid_key(lat, lng)}:accessibility"
+    hit = cache_get(key, max_age_days=TTL_ACCESSIBILITY)
+    if hit is not None:
+        return hit["score"], hit["data"]
+
+    score, data = score_accessibility(lat, lng)
+    cache_set(key, {"score": score, "data": data})
+    return score, data
+
 
 def cached_catchment(lat: float, lng: float) -> Tuple[float, int]:
-    return score_catchment(lat, lng)
+    key = f"{grid_key(lat, lng)}:catchment"
+    hit = cache_get(key, max_age_days=TTL_CATCHMENT)
+    if hit is not None:
+        return hit["score"], hit["data"]
+
+    score, data = score_catchment(lat, lng)
+    cache_set(key, {"score": score, "data": data})
+    return score, data
+
 
 def cached_spending(lat: float, lng: float) -> Tuple[float, Dict[str, Any]]:
-    return score_spending_power(lat, lng)
+    key = f"{grid_key(lat, lng)}:spending"
+    hit = cache_get(key, max_age_days=TTL_SPENDING)
+    if hit is not None:
+        return hit["score"], hit["data"]
+
+    score, data = score_spending_power(lat, lng)
+    cache_set(key, {"score": score, "data": data})
+    return score, data
 
 
 def validate_address(address: str) -> Tuple[bool, str]:
@@ -94,7 +162,6 @@ def geocode(address: str) -> Tuple[Any, Any]:
     except Exception as exc:
         logger.warning("Geocode error for %s: %s", address, exc)
         return None, None
-
 
 
 try:

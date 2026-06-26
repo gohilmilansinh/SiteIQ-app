@@ -13,6 +13,7 @@ import os
 import tempfile
 import pandas as pd
 import uuid
+from usage_limiter import can_score, record_score
 
 def _handle_recovery_token():
     """
@@ -519,6 +520,19 @@ elif mode == "Single Site":
 
     components.html(search_html, height=370, scrolling=False)
 
+    # ── Usage check (shown above the button so user sees status) ──
+    # NOTE: is_premium is hardcoded False until Phase 1 billing exists.
+    # Once billing is wired, replace this with a real subscription check,
+    # e.g. is_premium = get_current_user_plan(user["id"]) == "premium"
+    is_premium = False
+    allowed, usage_msg, usage_info = can_score(user["id"], is_premium=is_premium)
+ 
+    if not is_premium:
+        if allowed:
+            st.caption(f"ℹ️ {usage_msg}")
+        else:
+            st.warning(usage_msg)
+ 
     # ── Score button ──────────────────────────────────────
     col_score, col_clear = st.columns([4, 1])
     with col_clear:
@@ -526,25 +540,41 @@ elif mode == "Single Site":
             st.cache_data.clear()
             st.success("Cache cleared.")
     with col_score:
-        if st.button("Score This Site", type="primary", use_container_width=True):
+        score_clicked = st.button(
+            "Score This Site",
+            type="primary",
+            use_container_width=True,
+            disabled=not allowed,
+        )
+        if score_clicked:
             # Re-read address from query params in case updated by map
             if "address" in st.query_params:
                 st.session_state.search_address = st.query_params["address"]
             addr = st.session_state.get("search_address", "").strip()
             if addr:
-                with st.spinner("Analysing location..."):
-                    result = score_site(addr, brand_type)
-                if not result:
-                    st.session_state.result = None
-                    st.error("Something went wrong. Please try again.")
-                elif "error" in result:
-                    st.session_state.result = None
-                    st.error(result["error"])
+                # Re-check right before the expensive call — closes the
+                # race condition where two tabs/clicks could both pass
+                # the earlier check before either increments.
+                allowed_now, msg_now, _ = can_score(user["id"], is_premium=is_premium)
+                if not allowed_now:
+                    st.error(msg_now)
                 else:
-                    result["mode"] = "single"
-                    st.session_state.result = result
-                    save_to_history(result)
-
+                    with st.spinner("Analysing location..."):
+                        result = score_site(addr, brand_type)
+                    if not result:
+                        st.session_state.result = None
+                        st.error("Something went wrong. Please try again.")
+                    elif "error" in result:
+                        st.session_state.result = None
+                        st.error(result["error"])
+                    else:
+                        result["mode"] = "single"
+                        st.session_state.result = result
+                        save_to_history(result)
+                        if not is_premium:
+                            record_score(user["id"])
+                        st.rerun()  # refresh so the usage caption updates
+ 
             else:
                 st.warning(
                     "Please search or click on the map to select " "a location first."
