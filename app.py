@@ -14,32 +14,8 @@ import tempfile
 import pandas as pd
 import uuid
 from usage_limiter import can_score, record_score
-
-def _handle_recovery_token():
-    """
-    Detects Supabase password recovery token in URL fragment
-    and converts it to query params Streamlit can read.
-    """
-    import streamlit.components.v1 as components
-    components.html("""
-    <script>
-    (function() {
-        const hash = window.parent.location.hash;
-        if (hash && hash.includes('type=recovery')) {
-            const params = new URLSearchParams(hash.substring(1));
-            const access_token = params.get('access_token');
-            const refresh_token = params.get('refresh_token') || '';
-            if (access_token) {
-                const url = new URL(window.parent.location.href);
-                url.hash = '';
-                url.searchParams.set('recovery_token', access_token);
-                url.searchParams.set('refresh_token', refresh_token);
-                window.parent.location.replace(url.toString());
-            }
-        }
-    })();
-    </script>
-    """, height=0)
+from entitlements import is_premium, days_remaining, invalidate_cache
+import razorpay_billing
 
 def _change_password(new_password: str):
     try:
@@ -62,80 +38,6 @@ def _change_password(new_password: str):
         st.success("Password updated successfully!")
     except Exception as e:
         st.error(f"Failed to update password: {e}")
-
-def _do_reset_password(new_password: str):
-    try:
-        import os
-        try:
-            url = st.secrets.get("SUPABASE_URL", "") or os.environ.get("SUPABASE_URL", "")
-            key = st.secrets.get("SUPABASE_KEY", "") or os.environ.get("SUPABASE_KEY", "")
-        except Exception:
-            url = os.environ.get("SUPABASE_URL", "")
-            key = os.environ.get("SUPABASE_KEY", "")
-
-        from supabase import create_client
-        client = create_client(url, key)
-
-        # Set session using recovery token
-        access_token  = st.session_state.get("recovery_token", "")
-        refresh_token = st.session_state.get("refresh_token", "")
-
-        if not access_token:
-            st.error("Invalid or expired reset link. Please request a new one.")
-            return
-
-        client.auth.set_session(access_token, refresh_token)
-        client.auth.update_user({"password": new_password})
-
-        # Clear recovery state and query params
-        st.session_state.auth_mode      = "login"
-        st.session_state.recovery_token = None
-        st.session_state.refresh_token  = None
-
-        # Clear query params
-        st.query_params.clear()
-
-        st.success("Password updated! Please log in with your new password.")
-        import time
-        time.sleep(2)
-        st.rerun()
-
-    except Exception as e:
-        st.error(f"Failed to reset password: {e}")
-
-def _render_reset_password_page():
-    """Page shown when user clicks forgot password email link."""
-    st.markdown(
-        """
-        <div style='text-align:center;padding:40px 0 10px 0'>
-          <div style='font-size:40px;font-weight:800;color:#1D9E75'>SiteIQ</div>
-          <div style='font-size:14px;color:#888;margin-top:8px'>
-            Set your new password
-          </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    _, col, _ = st.columns([1, 1.2, 1])
-    with col:
-        new_pass = st.text_input(
-            "New Password", type="password",
-            key="reset_new_pass", placeholder="Min 6 characters"
-        )
-        confirm_pass = st.text_input(
-            "Confirm Password", type="password",
-            key="reset_confirm_pass", placeholder="Repeat new password"
-        )
-        if st.button("Set New Password", type="primary",
-                     use_container_width=True):
-            if not new_pass or not confirm_pass:
-                st.error("Please fill both fields.")
-            elif len(new_pass) < 6:
-                st.error("Password must be at least 6 characters.")
-            elif new_pass != confirm_pass:
-                st.error("Passwords do not match.")
-            else:
-                _do_reset_password(new_pass)
 
 def _inject_session_id():
     session_js = """
@@ -171,22 +73,49 @@ st.set_page_config(
 # ── Auth gate ─────────────────────────────────────────────
 from auth import render_auth_page, is_logged_in, logout, get_current_user
 
-# ── Handle password recovery token from email link ────────
-if "recovery_token" in st.query_params:
-    st.session_state.auth_mode      = "reset"
-    st.session_state.recovery_token = st.query_params["recovery_token"]
-    st.session_state.refresh_token  = st.query_params.get("refresh_token", "")
-
 if not is_logged_in():
-    if st.session_state.get("auth_mode") == "reset" and st.session_state.get("recovery_token"):
-        _render_reset_password_page()
-    else:
-        _handle_recovery_token()
-        render_auth_page()
+    render_auth_page()
     st.stop()
 
 # ── Logged in — show user + logout in sidebar ─────────────
 user = get_current_user()
+
+ 
+# ── Handle Razorpay payment return ─────────────────────────
+if "rzp_payment_id" in st.query_params:
+    payment_id = st.query_params["rzp_payment_id"]
+    order_id   = st.query_params.get("rzp_order_id", "")
+    signature  = st.query_params.get("rzp_signature", "")
+ 
+    # Avoid re-processing the same payment on every rerun
+    if st.session_state.get("last_verified_payment") != payment_id:
+        success, msg = razorpay_billing.verify_and_activate(
+            order_id=order_id,
+            payment_id=payment_id,
+            signature=signature,
+            user_id=user["id"],
+            plan_key=st.session_state.get("pending_plan_key", "monthly"),
+        )
+        st.session_state.last_verified_payment = payment_id
+        if success:
+            invalidate_cache(user["id"])
+            st.session_state.payment_result = ("success", msg)
+        else:
+            st.session_state.payment_result = ("error", msg)
+ 
+    # Clean the URL so a page refresh doesn't re-trigger this
+    st.query_params.clear()
+    st.rerun()
+ 
+if "payment_result" in st.session_state:
+    kind, msg = st.session_state.payment_result
+    if kind == "success":
+        st.success(f"✅ {msg}")
+    else:
+        st.error(f"Payment issue: {msg}")
+    del st.session_state.payment_result
+ 
+
 with st.sidebar:
     st.markdown(
         f"<div style='padding:12px;background:#0d1f1a;"
@@ -198,6 +127,26 @@ with st.sidebar:
         f"</div>",
         unsafe_allow_html=True,
     )
+    user_is_premium = is_premium(user["id"])
+    if user_is_premium:
+        remaining = days_remaining(user["id"])
+        st.markdown(
+            f"<div style='padding:10px 12px;background:#0d1f1a;"
+            f"border:1px solid #1D9E75;border-radius:8px;margin-bottom:12px'>"
+            f"<div style='font-size:11px;color:#1D9E75;font-weight:700'>"
+            f"⭐ PREMIUM</div>"
+            f"<div style='font-size:11px;color:#9ecfc0'>"
+            f"{remaining} days remaining</div></div>",
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            "<div style='padding:10px 12px;background:#1a1a0e;"
+            "border:1px solid #BA7517;border-radius:8px;margin-bottom:12px'>"
+            "<div style='font-size:11px;color:#BA7517;font-weight:700'>"
+            "FREE PLAN</div></div>",
+            unsafe_allow_html=True,
+        )
 
     # ── Change password ───────────────────────────────────
     with st.expander("Change Password"):
@@ -228,10 +177,19 @@ with st.sidebar:
 render_header()
 
 # ── Mode selector ─────────────────────────────────────────
+mode_options = ["Dashboard", "Single Site", "Compare N Sites",
+                  "Batch Upload", "History", "Upgrade"]
+
+# Support being redirected here by score_panel.py's upgrade button
+default_index = 0
+if st.session_state.get("force_nav") in mode_options:
+    default_index = mode_options.index(st.session_state.force_nav)
+    del st.session_state.force_nav
+
 mode = st.radio(
     "Mode",
-    ["Dashboard", "Single Site", "Compare N Sites",
-     "Batch Upload", "History"],
+    mode_options,
+    index=default_index,
     horizontal=True,
     label_visibility="collapsed",
 )
@@ -524,8 +482,9 @@ elif mode == "Single Site":
     # NOTE: is_premium is hardcoded False until Phase 1 billing exists.
     # Once billing is wired, replace this with a real subscription check,
     # e.g. is_premium = get_current_user_plan(user["id"]) == "premium"
-    is_premium = False
-    allowed, usage_msg, usage_info = can_score(user["id"], is_premium=is_premium)
+    user_premium = is_premium(user["id"])
+    allowed, usage_msg, usage_info = can_score(user["id"], is_premium=user_premium)
+
  
     if not is_premium:
         if allowed:
@@ -587,7 +546,7 @@ elif mode == "Single Site":
         if not scores:
             st.error("Result data is incomplete. Please score again.")
             st.stop()
-        render_score_breakdown(result, brand_type)
+        render_score_breakdown(result, brand_type, user_id=user["id"])
 
 
 # ════════════════════════════════════════════════════════════
@@ -1835,3 +1794,64 @@ elif mode == "History":
             clear_history()
             st.success("History cleared.")
             st.rerun()
+
+# ════════════════════════════════════════════════════════════
+# UPDRADE
+# ════════════════════════════════════════════════════════════
+ 
+elif mode == "Upgrade":
+    st.markdown("### Upgrade to Premium")
+ 
+    if not razorpay_billing.is_configured():
+        st.warning(
+            "Payments aren't configured yet. Add RAZORPAY_KEY_ID and "
+            "RAZORPAY_KEY_SECRET to your secrets to enable upgrades."
+        )
+    elif is_premium(user["id"]):
+        remaining = days_remaining(user["id"])
+        st.success(f"You're already Premium — {remaining} days remaining.")
+        st.markdown(
+            "<div style='font-size:12px;color:#888'>"
+            "Your plan will need manual renewal when it expires — "
+            "we'll show a Renew button here once it's close.</div>",
+            unsafe_allow_html=True,
+        )
+    else:
+        plan = razorpay_billing.PLANS["monthly"]
+        st.markdown(
+            f"""
+            <div style='background:#0A2E26;border-radius:14px;
+                        padding:28px;max-width:420px;margin:20px auto'>
+              <div style='font-size:13px;color:#9ecfc0;letter-spacing:1px'>
+                {plan['label'].upper()}</div>
+              <div style='font-size:40px;font-weight:700;color:white;
+                          margin:8px 0'>₹{plan['amount_paise']/100:.0f}
+                <span style='font-size:14px;color:#9ecfc0'>/month</span></div>
+              <div style='font-size:13px;color:#ccc;margin-bottom:16px'>
+                {plan['description']}</div>
+              <ul style='font-size:12px;color:#9ecfc0;line-height:1.8;
+                         padding-left:18px'>
+                <li>Unlimited site scoring</li>
+                <li>Full score explainability & competitor intelligence</li>
+                <li>ROI calculator & rent benchmarking</li>
+                <li>Risk flags & score trend history</li>
+                <li>PDF report export</li>
+              </ul>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+ 
+        order = razorpay_billing.create_order(user["id"], plan_key="monthly")
+        if order:
+            st.session_state.pending_plan_key = "monthly"
+            _, col, _ = st.columns([1, 1.4, 1])
+            with col:
+                components.html(
+                    razorpay_billing.get_checkout_widget_html(
+                        order, user["email"], user["name"], plan_key="monthly"
+                    ),
+                    height=120,
+                )
+        else:
+            st.error("Could not start checkout. Please try again shortly.")

@@ -15,9 +15,50 @@ from score_explainer import explain_scores
 from brand_registry import detect_known_brands
 from persistence import get_address_history
 from rent_benchmarks import get_rent_benchmark
+from entitlements import is_premium
+
+
+def _upsell_card(feature_name: str, description: str) -> None:
+    """Renders a locked-feature teaser card for non-premium users."""
+    st.markdown(
+        f"<div style='background:#0d1f1a;border:1px dashed #1D9E75;"
+        f"border-radius:10px;padding:20px 24px;margin:16px 0;"
+        f"text-align:center'>"
+        f"<div style='font-size:22px;margin-bottom:8px'>🔒</div>"
+        f"<div style='font-size:14px;font-weight:700;color:white;"
+        f"margin-bottom:6px'>{feature_name} — Premium Feature</div>"
+        f"<div style='font-size:12px;color:#9ecfc0;margin-bottom:14px;"
+        f"max-width:480px;margin-left:auto;margin-right:auto'>"
+        f"{description}</div>"
+        f"</div>",
+        unsafe_allow_html=True,
+    )
+
+
+def _premium_upgrade_banner() -> None:
+    st.markdown(
+        "<div style='background:linear-gradient(90deg,#0A2E26,#005447);"
+        "border-radius:14px;padding:24px 28px;margin:20px 0;"
+        "display:flex;align-items:center;justify-content:space-between;"
+        "flex-wrap:wrap;gap:14px'>"
+        "<div>"
+        "<div style='font-size:16px;font-weight:700;color:white'>"
+        "Unlock the full report</div>"
+        "<div style='font-size:13px;color:#9ecfc0;margin-top:4px'>"
+        "Score explainability, competitor intelligence, ROI calculator, "
+        "risk flags, score trends, and PDF export — all included with Premium.</div>"
+        "</div>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
+    st.page_link if False else None  # no-op, keep st import tidy
+    if st.button("Upgrade to Premium", type="primary", use_container_width=True):
+        st.session_state.force_nav = "Upgrade"
+        st.rerun()
+
 
 def render_address_trend(address: str) -> None:
-    """Renders score trend chart + table for a specific address."""
+    """Renders score trend chart + table for a specific address. Premium only."""
     history = get_address_history(address)
 
     if len(history) < 2:
@@ -170,13 +211,22 @@ def render_address_trend(address: str) -> None:
       <tbody style='color:white'>{rows_html}</tbody>
     </table></div></body></html>"""
 
-    import streamlit.components.v1 as components
     components.html(
         table_html,
         height=60 + len(history) * 50
     )
 
-def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
+
+def render_score_breakdown(result: Dict[str, Any], brand_type: str, user_id: str = "") -> None:
+    """
+    Main results renderer. ALWAYS shown to everyone: score card,
+    pills, radar chart, location map (basic visual context, no real
+    "intelligence" leaks). Everything that represents actual paid
+    analytical work — explainability, competitors, ROI, risk, trend,
+    PDF — is gated behind is_premium().
+    """
+    premium = is_premium(user_id) if user_id else False
+
     scores = result.get("scores", {})
     total = result["total_score"]
     verdict = result["verdict"]
@@ -196,6 +246,21 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
 
     st.markdown("---")
 
+    # ── Data quality badge (from Phase 1 item 7 — surfaces fallback data) ──
+    quality = result.get("data_quality", {})
+    if quality and quality.get("had_fallback"):
+        st.markdown(
+            "<div style='background:#1a0e0e;border:1px solid #BA7517;"
+            "border-radius:8px;padding:8px 14px;margin-bottom:12px;"
+            "font-size:11px;color:#e0b080'>"
+            "⚠️ Some data signals were unavailable and used fallback "
+            "estimates for this score — see details below.</div>",
+            unsafe_allow_html=True,
+        )
+
+    # ════════════════════════════════════════════════════
+    # ALWAYS VISIBLE — score card, pills, radar, map
+    # ════════════════════════════════════════════════════
     st.markdown(
         f"""
     <div style='background:#0A2E26;border-radius:12px;
@@ -236,7 +301,8 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
         unsafe_allow_html=True,
     )
 
-    # Score pills
+    # Score pills — shown to everyone (creates the "ooh I want to know
+    # WHY" pull without revealing the analytical work behind it)
     score_items = [
         ("Demand", scores["demand"]),
         ("Footfall", scores["footfall"]),
@@ -266,25 +332,17 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
         height=80,
     )
 
-    # Radar chart
+    # Radar chart — visual only, no numbers beyond what's already shown
     st.markdown("### Score Breakdown")
     col_left, col_chart, col_right = st.columns([1, 6, 1])
     with col_chart:
         cats = [
-            "Demand",
-            "Footfall",
-            "Competition",
-            "Accessibility",
-            "Catchment",
-            "Spending Power",
+            "Demand", "Footfall", "Competition",
+            "Accessibility", "Catchment", "Spending Power",
         ]
         vals = [
-            scores["demand"],
-            scores["footfall"],
-            scores["competition"],
-            scores["accessibility"],
-            scores["catchment"],
-            scores["spending_power"],
+            scores["demand"], scores["footfall"], scores["competition"],
+            scores["accessibility"], scores["catchment"], scores["spending_power"],
         ]
         fig = go.Figure(
             go.Scatterpolar(
@@ -309,7 +367,7 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
         )
         st.plotly_chart(fig, use_container_width=True)
 
-    # Map
+    # Basic map — shown to everyone (just a pin, no competitor data overlay)
     st.markdown("### Location Map")
     col_left, col_map, col_right = st.columns([1, 10, 1])
     with col_map:
@@ -325,18 +383,52 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
                 f"<b>{result['address']}</b><br>Score: {total}/100", max_width=220
             ),
         ).add_to(m)
-        folium.Circle(
-            location=[lat, lng],
-            radius=500,
-            color="#1D9E75",
-            fill=True,
-            fill_color="#1D9E75",
-            fill_opacity=0.05,
-        ).add_to(m)
-        folium.Circle(
-            location=[lat, lng], radius=1000, color="#BA7517", fill=False
-        ).add_to(m)
+        if premium:
+            # Radius circles reveal the analysis methodology — premium only
+            folium.Circle(
+                location=[lat, lng], radius=500, color="#1D9E75",
+                fill=True, fill_color="#1D9E75", fill_opacity=0.05,
+            ).add_to(m)
+            folium.Circle(
+                location=[lat, lng], radius=1000, color="#BA7517", fill=False,
+            ).add_to(m)
         st_folium(m, width="100%", height=400, returned_objects=[])
+
+    # ════════════════════════════════════════════════════
+    # PREMIUM GATE STARTS HERE
+    # ════════════════════════════════════════════════════
+    if not premium:
+        _premium_upgrade_banner()
+        _upsell_card(
+            "Why This Score?",
+            "See exactly which factors helped or hurt this site, with "
+            "benchmark comparisons and a plain-English explanation for each variable.",
+        )
+        _upsell_card(
+            "Competitor Intelligence",
+            "Full list of nearby competitors with distance, ratings, review counts, "
+            "and known national/regional brand threat detection.",
+        )
+        _upsell_card(
+            "ROI Calculator & Rent Benchmarking",
+            "Enter your rent to see revenue projections, payback period, and "
+            "market rent ranges for this area type and city.",
+        )
+        _upsell_card(
+            "Risk Assessment & Score Trend",
+            "Automatic risk flags and historical score tracking if you've "
+            "scored this address before.",
+        )
+        _upsell_card(
+            "PDF Report Export",
+            "Download a professional 6-page client-ready report for this site.",
+        )
+        st.caption("SiteScore Analytics · Gujarat · OpenStreetMap + Google Places API")
+        return  # ── stop here for free users ──
+
+    # ════════════════════════════════════════════════════
+    # EVERYTHING BELOW THIS LINE: PREMIUM ONLY
+    # ════════════════════════════════════════════════════
 
     # ── Score Explainability ──────────────────────────────
     st.markdown("### Why This Score?")
@@ -347,7 +439,6 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
         total_score=total,
     )
 
-    # Narrative summary
     if explanation["narrative"]:
         st.markdown(
             f"<div style='background:#111;border-left:3px solid #1D9E75;"
@@ -357,10 +448,8 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
             unsafe_allow_html=True,
         )
 
-    # Contribution table
     contribs = explanation["contributions"]
 
-    # Build HTML table
     rows_html = ""
     for c in contribs:
         score_col = (
@@ -379,7 +468,6 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
         )
         vs_avg_col = "#1D9E75" if c["vs_avg"] >= 0 else "#C0392B"
 
-        # Bar showing score vs average
         bar_score_w = int(c["score"])
         bar_avg_w   = int(c["avg_score"])
 
@@ -515,26 +603,13 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
     if result.get("competitor_details"):
         st.markdown("### Nearby Competitors")
 
-        # ── Known brand flags ─────────────────────────────
         known_brands = detect_known_brands(
             result["competitor_details"], brand_type
         )
         if known_brands:
-            threat_colors = {
-                "high":   "#C0392B",
-                "medium": "#BA7517",
-                "low":    "#1D9E75",
-            }
-            threat_labels = {
-                "high":   "HIGH THREAT",
-                "medium": "MEDIUM THREAT",
-                "low":    "LOW THREAT",
-            }
-            threat_icons = {
-                "high":   "🔴",
-                "medium": "🟡",
-                "low":    "🟢",
-            }
+            threat_colors = {"high": "#C0392B", "medium": "#BA7517", "low": "#1D9E75"}
+            threat_labels = {"high": "HIGH THREAT", "medium": "MEDIUM THREAT", "low": "LOW THREAT"}
+            threat_icons = {"high": "🔴", "medium": "🟡", "low": "🟢"}
 
             st.markdown(
                 "<div style='background:#1a0e0e;border:1px solid #C0392B;"
@@ -642,7 +717,6 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
                     unsafe_allow_html=True,
                 )
 
-
     # Risk assessment below
     st.markdown("### Risk Assessment")
     risks = []
@@ -682,7 +756,6 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
         unsafe_allow_html=True,
     )
 
-    # ── Rent benchmark reference ──────────────────────────
     bench = get_rent_benchmark(
         result["address"], brand_type, scores
     )
@@ -735,7 +808,7 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
             help="Enter the monthly rent quoted for this site",
             key=f"rent_{result['address'][:15]}",
         )
-    
+
     with col_setup:
         setup_cost = st.number_input(
             "Setup / Fit-out Cost (Rs.)",
@@ -755,7 +828,6 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
             setup_cost=setup_cost if setup_cost > 0 else None,
         )
 
-        # ROI summary banner
         st.markdown(f"""
         <div style='background:#0A2E26;border-radius:12px;
                     padding:20px 24px;margin:12px 0'>
@@ -790,7 +862,6 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
         </div>
         """, unsafe_allow_html=True)
 
-        # Metrics row
         col1, col2, col3, col4 = st.columns(4)
 
         def fmt_inr(amount):
@@ -821,7 +892,6 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
             help="Months to recover total setup cost"
         )
 
-        # Rent sensitivity table
         st.markdown("**Rent Sensitivity — what different rent levels mean**")
 
         rent_levels = [
@@ -881,7 +951,6 @@ def render_score_breakdown(result: Dict[str, Any], brand_type: str) -> None:
 
         components.html(sensitivity_html, height=240)
 
-        # Store ROI in result for PDF
         result["roi"] = roi
 
     else:

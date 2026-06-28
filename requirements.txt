@@ -8,3 +8,4 @@ reportlab
 pandas
 supabase
 openpyxl
+razorpay>=1.4.1

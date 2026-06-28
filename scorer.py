@@ -1,14 +1,9 @@
 from __future__ import annotations
 
 import logging
-import os
 from typing import Any, Dict, List, Tuple
-import streamlit as st
 
-import googlemaps
-import osmnx as ox
 from config import (
-    BRAND_KEYWORDS,
     FOOTFALL_ANCHORS,
     SUPPORTED_CITIES,
     VERDICT_THRESHOLDS,
@@ -16,101 +11,18 @@ from config import (
 )
 from census_data import score_population
 from cache_layer import cache_get, cache_set, grid_key, address_key
+import api_clients
 
 logger = logging.getLogger(__name__)
 
-# ── Cache TTLs (days) — tuned per how often the underlying reality changes
-TTL_GEOCODE       = 365   # an address's coordinates never change
-TTL_DEMAND        = 60    # daytime signals / population shift slowly
+# ── Cache TTLs (days) ───────────────────────────────────────────────
+TTL_GEOCODE       = 365
+TTL_DEMAND        = 60
 TTL_FOOTFALL      = 60
-TTL_COMPETITION   = 30    # competitor landscape is the most dynamic
-TTL_ACCESSIBILITY = 180   # road networks rarely change
+TTL_COMPETITION   = 30
+TTL_ACCESSIBILITY = 180
 TTL_CATCHMENT     = 60
 TTL_SPENDING      = 90
-
-
-def cached_geocode(address: str) -> Tuple[Any, Any]:
-    key = address_key(address)
-    hit = cache_get(key, max_age_days=TTL_GEOCODE)
-    if hit is not None:
-        return hit.get("lat"), hit.get("lng")
-
-    lat, lng = geocode(address)
-    if lat is not None:
-        cache_set(key, {"lat": lat, "lng": lng})
-    return lat, lng
-
-
-def cached_demand(
-    lat: float, lng: float, brand_type: str = "restaurant"
-) -> Tuple[float, Dict[str, Any]]:
-    key = f"{grid_key(lat, lng)}:demand:{brand_type}"
-    hit = cache_get(key, max_age_days=TTL_DEMAND)
-    if hit is not None:
-        return hit["score"], hit["data"]
-
-    score, data = score_demand(lat, lng, brand_type)
-    cache_set(key, {"score": score, "data": data})
-    return score, data
-
-
-def cached_footfall(
-    lat: float, lng: float, brand_type: str = "restaurant"
-) -> Tuple[float, Dict[str, int]]:
-    key = f"{grid_key(lat, lng)}:footfall:{brand_type}"
-    hit = cache_get(key, max_age_days=TTL_FOOTFALL)
-    if hit is not None:
-        return hit["score"], hit["data"]
-
-    score, data = score_footfall(lat, lng, brand_type)
-    cache_set(key, {"score": score, "data": data})
-    return score, data
-
-
-def cached_competition(
-    lat: float, lng: float, brand_type: str = "restaurant"
-) -> Tuple[float, List[Dict[str, Any]]]:
-    key = f"{grid_key(lat, lng)}:competition:{brand_type}"
-    hit = cache_get(key, max_age_days=TTL_COMPETITION)
-    if hit is not None:
-        return hit["score"], hit["data"]
-
-    score, data = score_competition(lat, lng, brand_type)
-    cache_set(key, {"score": score, "data": data})
-    return score, data
-
-
-def cached_accessibility(lat: float, lng: float) -> Tuple[float, Dict[str, int]]:
-    key = f"{grid_key(lat, lng)}:accessibility"
-    hit = cache_get(key, max_age_days=TTL_ACCESSIBILITY)
-    if hit is not None:
-        return hit["score"], hit["data"]
-
-    score, data = score_accessibility(lat, lng)
-    cache_set(key, {"score": score, "data": data})
-    return score, data
-
-
-def cached_catchment(lat: float, lng: float) -> Tuple[float, int]:
-    key = f"{grid_key(lat, lng)}:catchment"
-    hit = cache_get(key, max_age_days=TTL_CATCHMENT)
-    if hit is not None:
-        return hit["score"], hit["data"]
-
-    score, data = score_catchment(lat, lng)
-    cache_set(key, {"score": score, "data": data})
-    return score, data
-
-
-def cached_spending(lat: float, lng: float) -> Tuple[float, Dict[str, Any]]:
-    key = f"{grid_key(lat, lng)}:spending"
-    hit = cache_get(key, max_age_days=TTL_SPENDING)
-    if hit is not None:
-        return hit["score"], hit["data"]
-
-    score, data = score_spending_power(lat, lng)
-    cache_set(key, {"score": score, "data": data})
-    return score, data
 
 
 def validate_address(address: str) -> Tuple[bool, str]:
@@ -131,196 +43,226 @@ def validate_address(address: str) -> Tuple[bool, str]:
     return True, "Valid"
 
 
-def geocode(address: str) -> Tuple[Any, Any]:
-    if gmaps is None:
-        logger.warning("No Google Maps client available for geocoding.")
-        return None, None
+# ════════════════════════════════════════════════════════════
+# CACHED WRAPPERS — each returns (score, data, used_fallback: bool)
+# ════════════════════════════════════════════════════════════
 
-    try:
-        result = gmaps.geocode(address + ", Gujarat, India")
-        if not result:
-            return None, None
+def cached_geocode(address: str) -> Tuple[Any, Any, bool]:
+    key = address_key(address)
+    hit = cache_get(key, max_age_days=TTL_GEOCODE)
+    if hit is not None:
+        return hit.get("lat"), hit.get("lng"), hit.get("used_fallback", False)
 
-        found_gujarat = False
-        components = result[0].get("address_components", [])
-        for comp in components:
-            types = comp.get("types", [])
-            name = comp.get("long_name", "").lower()
-            if "administrative_area_level_1" in types:
-                if "gujarat" in name:
-                    found_gujarat = True
-                else:
-                    return None, None
+    res = api_clients.geocode_address(address)
+    if not res.ok:
+        logger.warning("Geocoding failed for %r: %s", address, res.error)
+        return None, None, True
 
-        formatted = result[0].get("formatted_address", "").lower()
-        if not found_gujarat and "gujarat" not in formatted:
-            return None, None
-
-        loc = result[0]["geometry"]["location"]
-        return loc["lat"], loc["lng"]
-
-    except Exception as exc:
-        logger.warning("Geocode error for %s: %s", address, exc)
-        return None, None
+    lat, lng = res.data["lat"], res.data["lng"]
+    cache_set(key, {"lat": lat, "lng": lng, "used_fallback": False})
+    return lat, lng, False
 
 
-try:
-    GOOGLE_API_KEY = st.secrets.get("GOOGLE_API_KEY", "") or os.environ.get("GOOGLE_API_KEY", "")
-except Exception:
-    GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "")
-if GOOGLE_API_KEY:
-    gmaps = googlemaps.Client(key=GOOGLE_API_KEY)
-else:
-    gmaps = None
+def cached_demand(
+    lat: float, lng: float, brand_type: str = "restaurant"
+) -> Tuple[float, Dict[str, Any], bool]:
+    key = f"{grid_key(lat, lng)}:demand:{brand_type}"
+    hit = cache_get(key, max_age_days=TTL_DEMAND)
+    if hit is not None:
+        return hit["score"], hit["data"], hit.get("used_fallback", False)
+
+    score, data, fallback = score_demand(lat, lng, brand_type)
+    cache_set(key, {"score": score, "data": data, "used_fallback": fallback})
+    return score, data, fallback
 
 
-def score_demand(lat: float, lng: float, brand_type: str = "restaurant") -> Tuple[float, Dict[str, Any]]:
-    try:
-        from config import DAYTIME_DEMAND_SIGNALS
+def cached_footfall(
+    lat: float, lng: float, brand_type: str = "restaurant"
+) -> Tuple[float, Dict[str, int], bool]:
+    key = f"{grid_key(lat, lng)}:footfall:{brand_type}"
+    hit = cache_get(key, max_age_days=TTL_FOOTFALL)
+    if hit is not None:
+        return hit["score"], hit["data"], hit.get("used_fallback", False)
 
-        # ── Residential score (40%) ───────────────────────
-        pop_score, pop_data = score_population(lat, lng)
+    score, data, fallback = score_footfall(lat, lng, brand_type)
+    cache_set(key, {"score": score, "data": data, "used_fallback": fallback})
+    return score, data, fallback
 
-        if pop_data["estimated_population"] == 0:
-            # OSM building fallback
-            try:
-                tags = {"building": ["residential", "apartments", "house"]}
-                b = ox.features_from_point((lat, lng), tags=tags, dist=1000)
-                pop_score = round(min(len(b) / 200 * 100, 100), 1)
-                pop_data = {"method": "osm_buildings", "count": len(b),
-                            "population": 0, "households": 0}
-            except Exception:
-                pop_score = 30.0
-                pop_data  = {"method": "fallback", "population": 0, "households": 0}
+
+def cached_competition(
+    lat: float, lng: float, brand_type: str = "restaurant"
+) -> Tuple[float, List[Dict[str, Any]], bool]:
+    key = f"{grid_key(lat, lng)}:competition:{brand_type}"
+    hit = cache_get(key, max_age_days=TTL_COMPETITION)
+    if hit is not None:
+        return hit["score"], hit["data"], hit.get("used_fallback", False)
+
+    score, data, fallback = score_competition(lat, lng, brand_type)
+    cache_set(key, {"score": score, "data": data, "used_fallback": fallback})
+    return score, data, fallback
+
+
+def cached_accessibility(lat: float, lng: float) -> Tuple[float, Dict[str, int], bool]:
+    key = f"{grid_key(lat, lng)}:accessibility"
+    hit = cache_get(key, max_age_days=TTL_ACCESSIBILITY)
+    if hit is not None:
+        return hit["score"], hit["data"], hit.get("used_fallback", False)
+
+    score, data, fallback = score_accessibility(lat, lng)
+    cache_set(key, {"score": score, "data": data, "used_fallback": fallback})
+    return score, data, fallback
+
+
+def cached_catchment(lat: float, lng: float) -> Tuple[float, int, bool]:
+    key = f"{grid_key(lat, lng)}:catchment"
+    hit = cache_get(key, max_age_days=TTL_CATCHMENT)
+    if hit is not None:
+        return hit["score"], hit["data"], hit.get("used_fallback", False)
+
+    score, data, fallback = score_catchment(lat, lng)
+    cache_set(key, {"score": score, "data": data, "used_fallback": fallback})
+    return score, data, fallback
+
+
+def cached_spending(lat: float, lng: float) -> Tuple[float, Dict[str, Any], bool]:
+    key = f"{grid_key(lat, lng)}:spending"
+    hit = cache_get(key, max_age_days=TTL_SPENDING)
+    if hit is not None:
+        return hit["score"], hit["data"], hit.get("used_fallback", False)
+
+    score, data, fallback = score_spending_power(lat, lng)
+    cache_set(key, {"score": score, "data": data, "used_fallback": fallback})
+    return score, data, fallback
+
+
+# ════════════════════════════════════════════════════════════
+# SCORING FUNCTIONS — pure(ish) logic, calling api_clients for data.
+# Each returns (score, data, used_fallback: bool) — used_fallback=True
+# means the API failed/was unavailable and a guessed default was used
+# instead of real data. This is what powers the data_quality badge.
+# ════════════════════════════════════════════════════════════
+
+def score_demand(
+    lat: float, lng: float, brand_type: str = "restaurant"
+) -> Tuple[float, Dict[str, Any], bool]:
+    used_fallback = False
+
+    # ── Residential score (40%) — Census 2011 ward data ──────
+    pop_score, pop_data = score_population(lat, lng)
+
+    if pop_data["estimated_population"] == 0:
+        building_res = api_clients.get_osm_buildings(lat, lng, dist=1000)
+        if building_res.ok:
+            count = building_res.data["count"]
+            pop_score = round(min(count / 200 * 100, 100), 1)
+            pop_data = {"method": "osm_buildings", "count": count,
+                        "population": 0, "households": 0}
         else:
-            pop_data["method"] = "census_2011"
+            used_fallback = True
+            pop_score = 30.0
+            pop_data = {"method": "fallback", "population": 0, "households": 0}
+    else:
+        pop_data["method"] = "census_2011"
 
-        # ── Daytime signals score (60%) ───────────────────
-        daytime_score = 0.0
-        daytime_found = {}
+    # ── Daytime signals score (60%) ───────────────────────────
+    daytime_score = 0.0
+    daytime_found: Dict[str, int] = {}
 
-        if gmaps is not None:
-            from config import BRAND_DEMAND_SIGNALS
-            signals = BRAND_DEMAND_SIGNALS.get(brand_type, DAYTIME_DEMAND_SIGNALS)
-            seen_ids: set = set()
-            total_weighted = 0.0
+    if api_clients.is_gmaps_available():
+        from config import DAYTIME_DEMAND_SIGNALS, BRAND_DEMAND_SIGNALS
+        signals = BRAND_DEMAND_SIGNALS.get(brand_type, DAYTIME_DEMAND_SIGNALS)
+        seen_ids: set = set()
+        total_weighted = 0.0
+        signal_failures = 0
 
-            for signal in signals:
-                try:
-                    kwargs = dict(location=(lat, lng), radius=1000)
-                    if signal.get("type"):
-                        kwargs["type"] = signal["type"]
-                    if signal.get("keyword"):
-                        kwargs["keyword"] = signal["keyword"]
+        for signal in signals:
+            res = api_clients.places_nearby(
+                lat, lng, radius=1000,
+                place_type=signal.get("type"), keyword=signal.get("keyword"),
+            )
+            if not res.ok:
+                signal_failures += 1
+                continue
 
-                    result  = gmaps.places_nearby(**kwargs)
-                    places  = result.get("results", [])
-                    new_places = [
-                        p for p in places
-                        if p.get("place_id") not in seen_ids
-                    ]
-                    for p in new_places:
-                        seen_ids.add(p.get("place_id"))
+            new_places = [p for p in res.data if p.get("place_id") not in seen_ids]
+            for p in new_places:
+                seen_ids.add(p.get("place_id"))
 
-                    if new_places:
-                        label = signal.get("type") or signal.get("keyword", "")[:20]
-                        count = len(new_places)
-                        daytime_found[label] = count
-                        # Weighted contribution — capped per signal type
-                        contribution = min(count, 5) * signal["weight"]
-                        total_weighted += contribution
+            if new_places:
+                label = signal.get("type") or signal.get("keyword", "")[:20]
+                count = len(new_places)
+                daytime_found[label] = count
+                contribution = min(count, 5) * signal["weight"]
+                total_weighted += contribution
 
-                except Exception as exc:
-                    logger.warning("Daytime signal query failed (%s): %s", signal, exc)
-                    continue
+        if signals and signal_failures == len(signals):
+            used_fallback = True
 
-            # Scale: 50 weighted points = score 100
-            daytime_score = round(min(total_weighted / 50 * 100, 100), 1)
-        else:
-            logger.warning("No Google Maps client — daytime demand signals skipped.")
-            daytime_score = pop_score  # fall back to residential only
+        daytime_score = round(min(total_weighted / 50 * 100, 100), 1)
+    else:
+        used_fallback = True
+        daytime_score = pop_score  # fall back to residential only
 
-        # ── Combined score ────────────────────────────────
-        combined = round(pop_score * 0.40 + daytime_score * 0.60, 1)
+    combined = round(pop_score * 0.40 + daytime_score * 0.60, 1)
 
-        return combined, {
-            "method":         pop_data.get("method", "census_2011"),
-            "population":     pop_data.get("estimated_population",
-                              pop_data.get("population", 0)),
-            "households":     pop_data.get("estimated_households",
-                              pop_data.get("households", 0)),
-            "wards":          pop_data.get("contributing_wards",
-                              pop_data.get("wards", [])),
-            "residential_score": pop_score,
-            "daytime_score":     daytime_score,
-            "daytime_signals":   daytime_found,
-        }
-
-    except Exception as exc:
-        logger.warning("Demand scoring failed: %s", exc)
-        return 30.0, {"method": "fallback", "population": 0, "households": 0}
+    return combined, {
+        "method":         pop_data.get("method", "census_2011"),
+        "population":     pop_data.get("estimated_population", pop_data.get("population", 0)),
+        "households":     pop_data.get("estimated_households", pop_data.get("households", 0)),
+        "wards":          pop_data.get("contributing_wards", pop_data.get("wards", [])),
+        "residential_score": pop_score,
+        "daytime_score":     daytime_score,
+        "daytime_signals":   daytime_found,
+    }, used_fallback
 
 
 def score_footfall(
     lat: float, lng: float, brand_type: str = "restaurant"
-) -> Tuple[float, Dict[str, int]]:
-    if gmaps is None:
-        logger.warning("No Google Maps client available for footfall scoring.")
-        return 50.0, {}
+) -> Tuple[float, Dict[str, int], bool]:
+    if not api_clients.is_gmaps_available():
+        return 50.0, {}, True
 
     anchors = FOOTFALL_ANCHORS.get(brand_type, FOOTFALL_ANCHORS["restaurant"])
     total = 0
     found: Dict[str, int] = {}
+    failures = 0
+
     for anchor in anchors:
-        try:
-            res = gmaps.places_nearby(location=(lat, lng), radius=500, type=anchor)
-            count = len(res.get("results", []))
-            if count > 0:
-                found[anchor] = count
-            total += count
-        except Exception as exc:
-            logger.warning("Footfall query failed for %s: %s", anchor, exc)
-    return round(min(total / 10 * 100, 100), 1), found
+        res = api_clients.places_nearby(lat, lng, radius=500, place_type=anchor)
+        if not res.ok:
+            failures += 1
+            continue
+        count = len(res.data)
+        if count > 0:
+            found[anchor] = count
+        total += count
+
+    used_fallback = bool(anchors) and failures == len(anchors)
+    return round(min(total / 10 * 100, 100), 1), found, used_fallback
 
 
 def score_competition(
     lat: float, lng: float, brand_type: str = "restaurant"
-) -> Tuple[float, List[Dict[str, Any]]]:
-
-    if gmaps is None:
-        logger.warning("No Google Maps client available for competition scoring.")
-        return 50.0, []
+) -> Tuple[float, List[Dict[str, Any]], bool]:
+    if not api_clients.is_gmaps_available():
+        return 50.0, [], True
 
     import math
     from config import COMPETITION_QUERIES
 
     queries = COMPETITION_QUERIES.get(brand_type, COMPETITION_QUERIES["restaurant"])
+    result = api_clients.places_nearby_multi(lat, lng, radius=500, queries=queries)
 
-    # Fetch all places across multiple queries, deduplicate by place_id
-    seen_ids: set = set()
-    all_places: List[Dict[str, Any]] = []
+    if not result.ok:
+        return 50.0, [], True
 
-    for q in queries:
-        try:
-            kwargs = dict(location=(lat, lng), radius=500)
-            if q.get("type"):
-                kwargs["type"] = q["type"]
-            if q.get("keyword"):
-                kwargs["keyword"] = q["keyword"]
-            result = gmaps.places_nearby(**kwargs)
-            for place in result.get("results", []):
-                pid = place.get("place_id")
-                if pid and pid not in seen_ids:
-                    seen_ids.add(pid)
-                    all_places.append(place)
-        except Exception as exc:
-            logger.warning("Competition query failed (%s): %s", q, exc)
-            continue
+    all_places = result.data
+    used_fallback = result.error is not None  # partial failures noted but not fatal
 
     if not all_places:
-        return 100.0, []
+        return 100.0, [], used_fallback
 
-    weighted_pressure  = 0.0
+    weighted_pressure = 0.0
     competitor_details: List[Dict[str, Any]] = []
 
     for place in all_places:
@@ -328,7 +270,6 @@ def score_competition(
         rating       = place.get("rating", 3.0)
         name         = place.get("name", "Unknown")
 
-        # ── Review + rating strength ──────────────────────
         review_weight = (
             min(math.log10(review_count) / 3.0, 1.0)
             if review_count > 0 else 0.05
@@ -336,18 +277,17 @@ def score_competition(
         rating_weight  = rating / 5.0
         brand_strength = review_weight * 0.7 + rating_weight * 0.3
 
-        # ── Distance weighting ────────────────────────────
         location  = place.get("geometry", {}).get("location", {})
         place_lat = location.get("lat", lat)
         place_lng = location.get("lng", lng)
 
-        R      = 6371000
-        dlat   = math.radians(place_lat - lat)
-        dlng   = math.radians(place_lng - lng)
-        a      = (math.sin(dlat / 2) ** 2 +
-                  math.cos(math.radians(lat)) *
-                  math.cos(math.radians(place_lat)) *
-                  math.sin(dlng / 2) ** 2)
+        R    = 6371000
+        dlat = math.radians(place_lat - lat)
+        dlng = math.radians(place_lng - lng)
+        a    = (math.sin(dlat / 2) ** 2 +
+                math.cos(math.radians(lat)) *
+                math.cos(math.radians(place_lat)) *
+                math.sin(dlng / 2) ** 2)
         distance_m = R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
         if distance_m <= 100:
@@ -372,84 +312,77 @@ def score_competition(
             "strength":        round(pressure, 2),
         })
 
-    # Sort by strength descending
     competitor_details.sort(key=lambda x: x["strength"], reverse=True)
-
-    # Scale: 10 strong competitors = score 0, 0 = score 100
     score = max(100.0 - (weighted_pressure / 10 * 100), 0.0)
-    return round(score, 1), competitor_details
+    return round(score, 1), competitor_details, used_fallback
 
 
-def score_accessibility(lat: float, lng: float) -> Tuple[float, Dict[str, int]]:
-    try:
-        G = ox.graph_from_point((lat, lng), dist=300, network_type="drive")
-        intersections = len([n for n, d in G.degree() if d > 2])
-        total_nodes = len(G.nodes)
-        return round(min(intersections / 15 * 100, 100), 1), {
-            "intersections": intersections,
-            "total_nodes": total_nodes,
-        }
-    except Exception as exc:
-        logger.warning("Accessibility scoring failed: %s", exc)
-        return 40.0, {"intersections": 0, "total_nodes": 0}
+def score_accessibility(lat: float, lng: float) -> Tuple[float, Dict[str, int], bool]:
+    res = api_clients.get_road_network(lat, lng, dist=300)
+    if not res.ok:
+        return 40.0, {"intersections": 0, "total_nodes": 0}, True
+
+    intersections = res.data["intersections"]
+    total_nodes = res.data["total_nodes"]
+    return round(min(intersections / 15 * 100, 100), 1), {
+        "intersections": intersections,
+        "total_nodes": total_nodes,
+    }, False
 
 
-def score_catchment(lat: float, lng: float) -> Tuple[float, int]:
-    if gmaps is None:
-        logger.warning("No Google Maps client available for catchment scoring.")
-        return 30.0, 0
-    try:
-        result = gmaps.places_nearby(
-            location=(lat, lng), radius=1000, keyword="cafe restaurant shop"
-        )
-        count = len(result.get("results", []))
-        return round(min(count / 20 * 100, 100), 1), count
-    except Exception as exc:
-        logger.warning("Catchment scoring failed: %s", exc)
-        return 30.0, 0
+def score_catchment(lat: float, lng: float) -> Tuple[float, int, bool]:
+    if not api_clients.is_gmaps_available():
+        return 30.0, 0, True
+
+    res = api_clients.places_nearby(lat, lng, radius=1000, keyword="cafe restaurant shop")
+    if not res.ok:
+        return 30.0, 0, True
+
+    count = len(res.data)
+    return round(min(count / 20 * 100, 100), 1), count, False
 
 
-def score_spending_power(lat: float, lng: float) -> Tuple[float, Dict[str, Any]]:
-    if gmaps is None:
-        logger.warning("No Google Maps client available for spending power scoring.")
-        return 50.0, {"avg_price_level": None, "sample_size": 0}
+def score_spending_power(lat: float, lng: float) -> Tuple[float, Dict[str, Any], bool]:
+    if not api_clients.is_gmaps_available():
+        return 50.0, {"avg_price_level": None, "sample_size": 0}, True
 
-    try:
-        result = gmaps.places_nearby(
-            location=(lat, lng), radius=1000, keyword="restaurant cafe shop hotel"
-        )
-        places = result.get("results", [])
+    res = api_clients.places_nearby(lat, lng, radius=1000, keyword="restaurant cafe shop hotel")
+    if not res.ok:
+        return 50.0, {"avg_price_level": None, "sample_size": 0}, True
 
-        if not places:
-            return 50.0, {"avg_price_level": None, "sample_size": 0}
+    places = res.data
+    if not places:
+        return 50.0, {"avg_price_level": None, "sample_size": 0}, False
 
-        price_levels = [p["price_level"] for p in places if "price_level" in p]
-        if not price_levels:
-            return 50.0, {"avg_price_level": None, "sample_size": 0}
+    price_levels = [p["price_level"] for p in places if "price_level" in p]
+    if not price_levels:
+        # Not a failure — just no price data published for these places.
+        return 50.0, {"avg_price_level": None, "sample_size": 0}, False
 
-        avg = sum(price_levels) / len(price_levels)
-        score = round(min(avg / 4 * 100, 100), 1)
+    avg = sum(price_levels) / len(price_levels)
+    score = round(min(avg / 4 * 100, 100), 1)
 
-        return score, {
-            "avg_price_level": round(avg, 2),
-            "sample_size": len(price_levels),
-            "distribution": {
-                "budget (0-1)": sum(1 for p in price_levels if p <= 1),
-                "moderate (2)": sum(1 for p in price_levels if p == 2),
-                "premium (3-4)": sum(1 for p in price_levels if p >= 3),
-            },
-        }
-    except Exception as exc:
-        logger.warning("Spending power scoring failed: %s", exc)
-        return 50.0, {"avg_price_level": None, "sample_size": 0}
+    return score, {
+        "avg_price_level": round(avg, 2),
+        "sample_size": len(price_levels),
+        "distribution": {
+            "budget (0-1)": sum(1 for p in price_levels if p <= 1),
+            "moderate (2)": sum(1 for p in price_levels if p == 2),
+            "premium (3-4)": sum(1 for p in price_levels if p >= 3),
+        },
+    }, False
 
+
+# ════════════════════════════════════════════════════════════
+# MAIN ENTRY POINT
+# ════════════════════════════════════════════════════════════
 
 def score_site(address: str, brand_type: str = "restaurant") -> Dict[str, Any]:
     is_valid, message = validate_address(address)
     if not is_valid:
         return {"error": message}
 
-    lat, lng = cached_geocode(address)
+    lat, lng, geo_fallback = cached_geocode(address)
     if not lat:
         return {
             "error": (
@@ -459,12 +392,12 @@ def score_site(address: str, brand_type: str = "restaurant") -> Dict[str, Any]:
             )
         }
 
-    demand_score, demand_data = cached_demand(lat, lng, brand_type)
-    footfall_score, footfall_found = cached_footfall(lat, lng, brand_type)
-    competition_score, competitor_details = cached_competition(lat, lng, brand_type)
-    access_score, access_data = cached_accessibility(lat, lng)
-    catchment_score, catchment_count = cached_catchment(lat, lng)
-    spending_score, spending_data = cached_spending(lat, lng)
+    demand_score, demand_data, demand_fb           = cached_demand(lat, lng, brand_type)
+    footfall_score, footfall_found, footfall_fb     = cached_footfall(lat, lng, brand_type)
+    competition_score, competitor_details, comp_fb  = cached_competition(lat, lng, brand_type)
+    access_score, access_data, access_fb            = cached_accessibility(lat, lng)
+    catchment_score, catchment_count, catchment_fb  = cached_catchment(lat, lng)
+    spending_score, spending_data, spending_fb       = cached_spending(lat, lng)
 
     scores = {
         "demand": demand_score,
@@ -476,12 +409,27 @@ def score_site(address: str, brand_type: str = "restaurant") -> Dict[str, Any]:
     }
 
     total = sum(scores[k] * WEIGHTS[k] for k in scores)
-    verdict_thresholds = VERDICT_THRESHOLDS
     verdict = (
-        "Strong"
-        if total >= verdict_thresholds["strong"]
-        else "Moderate" if total >= verdict_thresholds["moderate"] else "Weak"
+        "Strong" if total >= VERDICT_THRESHOLDS["strong"]
+        else "Moderate" if total >= VERDICT_THRESHOLDS["moderate"]
+        else "Weak"
     )
+
+    # ── Aggregate data quality — surfaced to the user in score_panel.py
+    fallback_map = {
+        "demand": demand_fb,
+        "footfall": footfall_fb,
+        "competition": comp_fb,
+        "accessibility": access_fb,
+        "catchment": catchment_fb,
+        "spending_power": spending_fb,
+    }
+    failed_signals = [k for k, v in fallback_map.items() if v]
+    if failed_signals:
+        logger.warning(
+            "score_site: %s used fallback data for signals: %s",
+            address, failed_signals,
+        )
 
     return {
         "address": address,
@@ -492,6 +440,10 @@ def score_site(address: str, brand_type: str = "restaurant") -> Dict[str, Any]:
         "total_score": round(total, 1),
         "verdict": verdict,
         "competitor_details": competitor_details,
+        "data_quality": {
+            "had_fallback": len(failed_signals) > 0,
+            "failed_signals": failed_signals,
+        },
         "raw": {
             "demand_buildings":        demand_data.get("count", 0),
             "demand_population":       demand_data.get("population", 0),
